@@ -32,7 +32,7 @@ export function ReportDialog({
   target,
   onClose,
 }: {
-  target: { type: "message" | "profile"; id: string } | null;
+  target: { type: "message" | "profile" | "pet"; id: string } | null;
   onClose: () => void;
 }) {
   const [reason, setReason] = useState<ReportReason | undefined>();
@@ -53,7 +53,7 @@ export function ReportDialog({
     <Dialog open={!!target} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Report {target?.type === "profile" ? "this member" : "this message"}</DialogTitle>
+          <DialogTitle>Report {target?.type === "profile" ? "this member" : target?.type === "pet" ? "this pet" : "this message"}</DialogTitle>
           <DialogDescription>
             Reports are private. The person isn&apos;t told who reported them.
           </DialogDescription>

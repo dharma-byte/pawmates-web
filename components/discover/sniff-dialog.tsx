@@ -18,13 +18,16 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
+// Anything with a pet and its owner: a Discover result, a profile or a pet page.
+export type SniffTarget = Pick<NearbyPet, "pet_id" | "name" | "owner_id"> & { owner_username: string | null };
+
 export function SniffDialog({
   pet,
   myPets,
   open,
   onOpenChange,
 }: {
-  pet: NearbyPet;
+  pet: SniffTarget;
   myPets: Me["pets"];
   open: boolean;
   onOpenChange: (open: boolean) => void;

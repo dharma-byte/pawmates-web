@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MapPin, PawPrint, Syringe } from "lucide-react";
 import { formatAge, formatDistance, type NearbyPet } from "@/lib/api/discover";
 
@@ -7,7 +8,7 @@ export function PetCard({ pet, action }: { pet: NearbyPet; action?: React.ReactN
 
   return (
     <article className="overflow-hidden rounded-xl border bg-card">
-      <div className="relative aspect-4/3 bg-muted">
+      <Link href={`/pets/${pet.pet_id}`} tabIndex={-1} aria-hidden className="relative block aspect-4/3 bg-muted">
         {pet.photo ? (
           <Image
             src={pet.photo}
@@ -24,10 +25,14 @@ export function PetCard({ pet, action }: { pet: NearbyPet; action?: React.ReactN
             {pet.compatibility}% match
           </span>
         )}
-      </div>
+      </Link>
       <div className="grid gap-1 p-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="truncate font-semibold">{pet.name}</h3>
+          <h3 className="truncate font-semibold">
+            <Link href={`/pets/${pet.pet_id}`} className="hover:underline">
+              {pet.name}
+            </Link>
+          </h3>
           {pet.vaccinated && (
             <span className="inline-flex items-center gap-1 text-xs text-teal" title="Vaccinated">
               <Syringe className="size-3.5" aria-hidden />

@@ -1,19 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Check, Clock, Compass, SlidersHorizontal } from "lucide-react";
-import { OpenChatButton } from "@/components/chat/open-chat-button";
-import { connectionKeys, fetchMyConnections, type ConnectionState } from "@/lib/api/connections";
+import { Compass, SlidersHorizontal } from "lucide-react";
+import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { fetchNearbyPets, type NearbyPet } from "@/lib/api/discover";
 import { fetchMe, meKey } from "@/lib/api/me";
 import { ENERGY_LEVELS, SIZES, SPECIES, TEMPERAMENTS, type Option } from "@/lib/constants/pets";
 import type { Database } from "@/types/database";
+import { ConnectionAction } from "@/components/pets/connection-action";
 import { PetCard } from "@/components/pets/pet-card";
 import { ChoiceChips } from "@/components/shared/choice-chips";
 import { FilterChips } from "@/components/shared/filter-chips";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SniffDialog } from "./sniff-dialog";
@@ -156,7 +155,7 @@ export function DiscoverView() {
               <PetCard
                 pet={pet}
                 action={
-                  <SniffAction
+                  <ConnectionAction
                     ownerId={pet.owner_id}
                     state={connections?.get(pet.owner_id) ?? "none"}
                     canSniff={!!me?.pets.length}
@@ -192,37 +191,3 @@ export function DiscoverView() {
   );
 }
 
-function SniffAction({
-  ownerId,
-  state,
-  canSniff,
-  onSniff,
-}: {
-  ownerId: string;
-  state: ConnectionState;
-  canSniff: boolean;
-  onSniff: () => void;
-}) {
-  if (state === "pawmates") {
-    return <OpenChatButton userId={ownerId} label="Pawmates · Chat" variant="secondary" className="w-full" />;
-  }
-  if (state === "sent") {
-    return (
-      <Button variant="outline" className="w-full" disabled>
-        <Clock aria-hidden /> Request sent
-      </Button>
-    );
-  }
-  if (state === "received") {
-    return (
-      <Link href="/requests" className={buttonVariants({ className: "w-full" })}>
-        <Check aria-hidden /> They sniffed you! Respond
-      </Link>
-    );
-  }
-  return (
-    <Button className="w-full" onClick={onSniff} disabled={!canSniff}>
-      🐾 Send Sniff request
-    </Button>
-  );
-}

@@ -159,7 +159,7 @@ export async function blockUser(userId: string) {
 }
 
 export async function reportContent(
-  targetType: "message" | "profile",
+  targetType: "message" | "profile" | "pet",
   targetId: string,
   reason: ReportReason,
   details: string,
