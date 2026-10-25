@@ -47,7 +47,7 @@ export function EmailConfirmed() {
 
   return (
     <div className="grid max-w-sm gap-4 text-center">
-      <CircleCheck className="mx-auto size-12 text-green-600" aria-hidden />
+      <CircleCheck className="mx-auto size-12 text-teal" aria-hidden />
       <h1 className="text-2xl font-semibold">Email confirmed</h1>
       <p className="text-muted-foreground">
         Go back to the Pawmates tab where you signed up. It has already moved on. You can close

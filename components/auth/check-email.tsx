@@ -92,7 +92,7 @@ export function CheckEmail({
 
   return (
     <div className="grid gap-4 text-center">
-      <MailCheck className="mx-auto size-10 text-primary" aria-hidden />
+      <MailCheck className="mx-auto size-10 text-teal" aria-hidden />
       <p className="text-sm">
         {message} <span className="font-medium break-all">{email}</span>.
       </p>

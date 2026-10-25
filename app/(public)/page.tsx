@@ -38,8 +38,12 @@ export default function LandingPage() {
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-16 px-4 py-12">
         <section className="flex flex-col items-start gap-6 sm:items-center sm:text-center">
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-            Where pets make friends, and so do their humans.
+          <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+            Where pets{" "}
+            <span className="bg-linear-to-r from-orange to-coral bg-clip-text text-transparent">
+              make friends
+            </span>
+            , and so do their humans.
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground text-pretty">
             Pawmates is a free, pets-only community. Find compatible playmates near you, chat,
@@ -61,7 +65,9 @@ export default function LandingPage() {
         <section className="grid gap-6 sm:grid-cols-2">
           {FEATURES.map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex gap-4 rounded-xl border p-5">
-              <Icon className="mt-0.5 size-6 shrink-0 text-primary" aria-hidden />
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
+                <Icon className="size-5 text-teal" aria-hidden />
+              </span>
               <div className="grid gap-1">
                 <h2 className="font-medium">{title}</h2>
                 <p className="text-sm text-muted-foreground">{text}</p>
