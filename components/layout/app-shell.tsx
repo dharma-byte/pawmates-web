@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -29,7 +30,6 @@ const TABS = [
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
@@ -54,7 +54,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     router.replace("/");
     router.refresh();
   }
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -62,23 +61,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
           <Logo href="/home" />
 
-          <nav aria-label="Main" className="hidden gap-1 md:flex">
-            {TABS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={isActive(href) ? "page" : undefined}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  isActive(href) ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                <Icon className="size-4" aria-hidden />
-                {label}
-                <CountBadge count={badges[href] ?? 0} />
-              </Link>
-            ))}
-          </nav>
+          <Suspense fallback={<NavTabs variant="header" badges={badges} pathname={null} />}>
+            <ActiveNavTabs variant="header" badges={badges} />
+          </Suspense>
 
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -123,32 +108,78 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:pb-10">{children}</main>
 
       {/* Mobile tab bar: most members use Pawmates on a phone, outdoors. */}
-      <nav
-        aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-20 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
-      >
-        <ul className="grid grid-cols-4">
-          {TABS.map(({ href, label, icon: Icon }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={isActive(href) ? "page" : undefined}
-                className={cn(
-                  "flex flex-col items-center gap-0.5 py-2 text-xs font-medium",
-                  isActive(href) ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                <span className="relative">
-                  <Icon className={cn("size-5", isActive(href) && "text-coral")} aria-hidden />
-                  <CountBadge count={badges[href] ?? 0} floating />
-                </span>
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <Suspense fallback={<NavTabs variant="bottom" badges={badges} pathname={null} />}>
+        <ActiveNavTabs variant="bottom" badges={badges} />
+      </Suspense>
     </div>
+  );
+}
+
+// The current path is request-time data on dynamic routes like /chat/[id],
+// so only this small piece reads it, inside a Suspense boundary.
+function ActiveNavTabs(props: { variant: "header" | "bottom"; badges: Record<string, number> }) {
+  return <NavTabs {...props} pathname={usePathname()} />;
+}
+
+function NavTabs({
+  variant,
+  badges,
+  pathname,
+}: {
+  variant: "header" | "bottom";
+  badges: Record<string, number>;
+  pathname: string | null;
+}) {
+  const isActive = (href: string) => !!pathname && (pathname === href || pathname.startsWith(`${href}/`));
+
+  if (variant === "header") {
+    return (
+      <nav aria-label="Main" className="hidden gap-1 md:flex">
+        {TABS.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            aria-current={isActive(href) ? "page" : undefined}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              isActive(href) ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <Icon className="size-4" aria-hidden />
+            {label}
+            <CountBadge count={badges[href] ?? 0} />
+          </Link>
+        ))}
+      </nav>
+    );
+  }
+
+  return (
+    <nav
+      aria-label="Main"
+      className="fixed inset-x-0 bottom-0 z-20 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+    >
+      <ul className="grid grid-cols-4">
+        {TABS.map(({ href, label, icon: Icon }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              aria-current={isActive(href) ? "page" : undefined}
+              className={cn(
+                "flex flex-col items-center gap-0.5 py-2 text-xs font-medium",
+                isActive(href) ? "text-primary" : "text-muted-foreground",
+              )}
+            >
+              <span className="relative">
+                <Icon className={cn("size-5", isActive(href) && "text-coral")} aria-hidden />
+                <CountBadge count={badges[href] ?? 0} floating />
+              </span>
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 
