@@ -36,6 +36,18 @@ export const petSchema = z.object({
   temperament: z.enum(valuesOf(TEMPERAMENTS), { error: "Choose a temperament" }),
   playStyle: z.enum(valuesOf(PLAY_STYLES), { error: "Choose a play style" }),
   vaccinated: z.boolean(),
+  vaccinatedOn: z
+    .string()
+    .refine((value) => !value || value <= today(), "Date can't be in the future"),
+  // null = not sure. good_with_cats and good_with_small_dogs feed the match score.
+  goodWithKids: z.boolean().nullable(),
+  goodWithCats: z.boolean().nullable(),
+  goodWithSmallDogs: z.boolean().nullable(),
+  neutered: z.boolean().nullable(),
+  allergies: z.string().trim().max(300, "Use at most 300 characters"),
+  specialNeeds: z.string().trim().max(300, "Use at most 300 characters"),
+  likes: z.array(z.string()).max(15),
+  dislikes: z.array(z.string()).max(15),
 });
 
 export type ProfileValues = z.infer<typeof profileSchema>;

@@ -271,6 +271,12 @@ isOneToOne: false
 "compatibility_score":
 { Args: { "pet_a": string,"pet_b": string }; Returns: number
                            },
+"delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"export_my_data":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "get_my_conversations":
 { Args: Record<PropertyKey, never>; Returns: {
               "conversation_id": string,"event_id": string,"group_id": string,"last_message_at": string,"last_message_body": string,"last_message_type": Database["public"]['Enums']["message_type"],"muted": boolean,"other_user_id": string,"type": Database["public"]['Enums']["conversation_type"],"unread_count": number
@@ -286,6 +292,11 @@ isOneToOne: false
                            },
 "mark_conversation_read":
 { Args: { "conv": string }; Returns: undefined
+                           },
+"my_blocked_users":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "avatar_url": string,"blocked_at": string,"full_name": string,"user_id": string,"username": string
+            }[]
                            },
 "nearby_pets":
 { Args: { "energies"?: (Database["public"]['Enums']["energy_level"])[],"lat"?: number,"lng"?: number,"max_age_months"?: number,"min_age_months"?: number,"my_pet_id"?: string,"page_offset"?: number,"page_size"?: number,"radius_km"?: number,"sizes"?: (Database["public"]['Enums']["pet_size"])[],"species_filter"?: (Database["public"]['Enums']["pet_species"])[],"temperaments"?: (Database["public"]['Enums']["pet_temperament"])[],"vaccinated_only"?: boolean }; Returns: {
