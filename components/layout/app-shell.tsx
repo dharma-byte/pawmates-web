@@ -5,7 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Compass, House, LogOut, MessageCircle, Settings, Shield, UserRound, Users } from "lucide-react";
 import { cn } from "cn";
+import { chatKeys, fetchInbox } from "@/lib/api/chat";
+import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { fetchMe, meKey } from "@/lib/api/me";
+import { useInboxRealtime } from "@/hooks/use-chat-channel";
 import { Logo } from "@/components/shared/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -30,6 +33,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+
+  // Badges: unread chats (live via Realtime) and unanswered Sniff requests.
+  const { data: inbox } = useQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
+  const { data: connections } = useQuery({
+    queryKey: connectionKeys.mine,
+    queryFn: fetchMyConnections,
+    refetchOnWindowFocus: true,
+  });
+  useInboxRealtime(() => queryClient.invalidateQueries({ queryKey: chatKeys.inbox }));
+  const badges: Record<string, number> = {
+    "/chat": inbox?.filter((c) => c.unread_count > 0 && !c.muted).length ?? 0,
+    "/requests": [...(connections?.values() ?? [])].filter((state) => state === "received").length,
+  };
 
   async function signOut() {
     await fetch("/auth/signout", { method: "POST" });
@@ -59,6 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 <Icon className="size-4" aria-hidden />
                 {label}
+                <CountBadge count={badges[href] ?? 0} />
               </Link>
             ))}
           </nav>
@@ -121,7 +138,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   isActive(href) ? "text-primary" : "text-muted-foreground",
                 )}
               >
-                <Icon className={cn("size-5", isActive(href) && "text-coral")} aria-hidden />
+                <span className="relative">
+                  <Icon className={cn("size-5", isActive(href) && "text-coral")} aria-hidden />
+                  <CountBadge count={badges[href] ?? 0} floating />
+                </span>
                 {label}
               </Link>
             </li>
@@ -129,5 +149,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </ul>
       </nav>
     </div>
+  );
+}
+
+function CountBadge({ count, floating }: { count: number; floating?: boolean }) {
+  if (count === 0) return null;
+  return (
+    <span
+      className={cn(
+        "min-w-4 rounded-full bg-coral px-1 text-center text-[10px] leading-4 font-semibold text-white",
+        floating && "absolute -top-1.5 -right-2.5",
+      )}
+    >
+      {count > 9 ? "9+" : count}
+      <span className="sr-only"> new</span>
+    </span>
   );
 }

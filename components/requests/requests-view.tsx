@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Inbox, MessageCircle, PawPrint, Send, UserRound } from "lucide-react";
+import { Inbox, PawPrint, Send, UserRound } from "lucide-react";
+import { OpenChatButton } from "@/components/chat/open-chat-button";
 import { toast } from "sonner";
 import {
   connectionKeys,
@@ -15,7 +15,7 @@ import {
 } from "@/lib/api/connections";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -166,9 +166,7 @@ function RequestRow({
         )}
         {kind === "pawmates" && (
           <>
-            <Link href="/chat" className={buttonVariants()}>
-              <MessageCircle aria-hidden /> Chat
-            </Link>
+            {other?.id && <OpenChatButton userId={other.id} />}
             <Button variant="ghost" size="sm" onClick={() => remove.mutate()} disabled={busy}>
               Remove
             </Button>

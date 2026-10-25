@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Check, Clock, Compass, MessageCircle, SlidersHorizontal } from "lucide-react";
+import { Check, Clock, Compass, SlidersHorizontal } from "lucide-react";
+import { OpenChatButton } from "@/components/chat/open-chat-button";
 import { connectionKeys, fetchMyConnections, type ConnectionState } from "@/lib/api/connections";
 import { fetchNearbyPets, type NearbyPet } from "@/lib/api/discover";
 import { fetchMe, meKey } from "@/lib/api/me";
@@ -156,6 +157,7 @@ export function DiscoverView() {
                 pet={pet}
                 action={
                   <SniffAction
+                    ownerId={pet.owner_id}
                     state={connections?.get(pet.owner_id) ?? "none"}
                     canSniff={!!me?.pets.length}
                     onSniff={() => setSniffing(pet)}
@@ -191,20 +193,18 @@ export function DiscoverView() {
 }
 
 function SniffAction({
+  ownerId,
   state,
   canSniff,
   onSniff,
 }: {
+  ownerId: string;
   state: ConnectionState;
   canSniff: boolean;
   onSniff: () => void;
 }) {
   if (state === "pawmates") {
-    return (
-      <Link href="/chat" className={buttonVariants({ variant: "secondary", className: "w-full" })}>
-        <MessageCircle aria-hidden /> Pawmates · Chat
-      </Link>
-    );
+    return <OpenChatButton userId={ownerId} label="Pawmates · Chat" variant="secondary" className="w-full" />;
   }
   if (state === "sent") {
     return (
