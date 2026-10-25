@@ -58,6 +58,7 @@ export function SignupForm() {
       <CheckEmail
         email={sentTo}
         message="We sent a confirmation link to"
+        redirectTo="/onboarding"
         onResend={() =>
           supabase.auth.resend({ type: "signup", email: sentTo, options: { emailRedirectTo: redirect() } })
         }

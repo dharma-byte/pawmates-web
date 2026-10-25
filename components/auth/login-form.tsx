@@ -43,6 +43,7 @@ export function LoginForm() {
       <CheckEmail
         email={sentTo}
         message="If there is a Pawmates account for this email, we sent a sign-in link to"
+        redirectTo={next}
         onResend={() => sendMagicLink(sentTo)}
         onBack={() => setSentTo(null)}
       />
