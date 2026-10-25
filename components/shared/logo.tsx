@@ -10,7 +10,7 @@ export function Logo({ className, href = "/" }: { className?: string; href?: str
       aria-label="Pawmates home"
       className={cn("inline-flex items-center gap-2 font-heading text-xl font-bold", className)}
     >
-      <Image src="/brand/pawmates-mark.svg" alt="" width={32} height={32} priority />
+      <Image src="/brand/pawmates-mark.svg" alt="" width={32} height={32} preload />
       <span aria-hidden>
         <span className="text-primary">Paw</span>
         <span className="text-coral">mates</span>
