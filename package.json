@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "gen:types": "supabase gen types typescript --local --workdir ../pawmates-backend > types/database.ts"
   },
   "dependencies": {
