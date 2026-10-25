@@ -193,7 +193,11 @@ export function ChatRoom() {
           <AvatarFallback>{name[0] ?? <UserRound className="size-4" />}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">{conversation.isPending ? <Skeleton className="h-5 w-32" /> : name}</p>
+          {conversation.isPending ? (
+            <Skeleton className="h-5 w-32" />
+          ) : (
+            <p className="truncate font-semibold">{name}</p>
+          )}
           <p className={`truncate text-xs ${status === "online" || status === "typing…" ? "text-teal" : "text-muted-foreground"}`}>
             {status}
           </p>

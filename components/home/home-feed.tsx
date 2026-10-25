@@ -23,9 +23,11 @@ export function HomeFeed() {
   return (
     <div className="grid gap-10">
       <section className="grid gap-1">
-        <h1 className="text-2xl font-bold sm:text-3xl">
-          {me ? `Hi ${firstName(me.full_name)} 👋` : <Skeleton className="h-9 w-48" />}
-        </h1>
+        {me ? (
+          <h1 className="text-2xl font-bold sm:text-3xl">Hi {firstName(me.full_name)} 👋</h1>
+        ) : (
+          <Skeleton className="h-9 w-48" />
+        )}
         <p className="text-muted-foreground">
           {me?.area_name ? `Here's what's happening around ${me.area_name}.` : "Here's what's happening near you."}
         </p>
