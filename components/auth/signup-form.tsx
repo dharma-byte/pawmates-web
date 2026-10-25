@@ -10,6 +10,7 @@ import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/shared/password-input";
 import { CheckEmail } from "./check-email";
 import { Field } from "./field";
 
@@ -87,9 +88,8 @@ export function SignupForm() {
         error={errors.password?.message}
         hint="At least 8 characters, with letters and numbers."
       >
-        <Input
+        <PasswordInput
           id="signup-password"
-          type="password"
           autoComplete="new-password"
           className="h-10"
           aria-invalid={!!errors.password}

@@ -15,6 +15,7 @@ import {
 } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckEmail } from "./check-email";
 import { Field } from "./field";
@@ -148,9 +149,8 @@ function PasswordLogin({
         />
       </Field>
       <Field id="login-password" label="Password" error={errors.password?.message}>
-        <Input
+        <PasswordInput
           id="login-password"
-          type="password"
           autoComplete="current-password"
           className="h-10"
           aria-invalid={!!errors.password}
