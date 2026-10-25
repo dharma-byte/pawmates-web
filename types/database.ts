@@ -257,7 +257,15 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "ban_user":
+            "admin_stats":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "messages_last_7_days": number,"open_reports": number,"pending_verifications": number,"pets": number,"total_users": number,"verified_users": number
+            }[]
+                           },
+"am_i_admin":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"ban_user":
 { Args: { "reason": string,"target": string }; Returns: undefined
                            },
 "compatibility_score":
