@@ -2,7 +2,7 @@ import Image from "next/image";
 import { MapPin, PawPrint, Syringe } from "lucide-react";
 import { formatAge, formatDistance, type NearbyPet } from "@/lib/api/discover";
 
-export function PetCard({ pet }: { pet: NearbyPet }) {
+export function PetCard({ pet, action }: { pet: NearbyPet; action?: React.ReactNode }) {
   const details = [pet.breed ?? pet.species, formatAge(pet.age_months)].filter(Boolean).join(" · ");
 
   return (
@@ -42,6 +42,7 @@ export function PetCard({ pet }: { pet: NearbyPet }) {
             {[pet.area_name, formatDistance(pet.approx_distance_km)].filter(Boolean).join(" · ")}
           </span>
         </p>
+        {action && <div className="pt-2">{action}</div>}
       </div>
     </article>
   );
