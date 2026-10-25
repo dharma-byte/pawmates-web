@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,12 +19,20 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+type Tab = "incoming" | "sent" | "pawmates";
+
 export function RequestsView() {
   const { data, isPending, error } = useQuery({
     queryKey: connectionKeys.detailed,
     queryFn: fetchDetailedConnections,
     refetchOnWindowFocus: true,
   });
+
+  // Controlled: open on Received if anything is waiting (else Pawmates), then
+  // stay on whatever tab the member picks, even as accepting changes the data.
+  const [chosenTab, setChosenTab] = useState<Tab | null>(null);
+  const initialTab: Tab = !data || data.incoming.length > 0 || data.pawmates.length === 0 ? "incoming" : "pawmates";
+  const tab = chosenTab ?? initialTab;
 
   return (
     <div className="grid gap-6">
@@ -36,7 +45,7 @@ export function RequestsView() {
       {error && <p className="text-destructive">{error.message}</p>}
 
       {data && (
-        <Tabs defaultValue={data.incoming.length > 0 || data.pawmates.length === 0 ? "incoming" : "pawmates"}>
+        <Tabs value={tab} onValueChange={(value) => setChosenTab(value as Tab)}>
           <TabsList className="w-full">
             <TabsTrigger value="incoming">
               Received {data.incoming.length > 0 && <Badge className="ml-1">{data.incoming.length}</Badge>}
