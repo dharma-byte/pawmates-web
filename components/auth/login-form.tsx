@@ -20,7 +20,7 @@ import { CheckEmail } from "./check-email";
 import { Field } from "./field";
 
 const LINK_ERRORS: Record<string, string> = {
-  link: "That link is invalid or has expired. Sign in below or request a new link.",
+  link: "That link has expired or was already used. If you confirmed your email, just sign in below. Otherwise request a new link.",
 };
 
 export function LoginForm() {

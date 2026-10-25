@@ -13,12 +13,18 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
 
-  const fail = () => NextResponse.redirect(new URL("/login?error=link", request.url));
+  const supabase = await createClient();
+
+  // A link that was already used (clicked twice, or opened by a mail scanner)
+  // fails verification. If the user is signed in anyway, just carry on.
+  const fail = async () => {
+    const { data } = await supabase.auth.getClaims();
+    if (data?.claims?.sub) return NextResponse.redirect(new URL(next, request.url));
+    return NextResponse.redirect(new URL("/login?error=link", request.url));
+  };
 
   // Supabase redirects here with ?error=... when a link is expired or reused.
   if (searchParams.get("error")) return fail();
-
-  const supabase = await createClient();
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);

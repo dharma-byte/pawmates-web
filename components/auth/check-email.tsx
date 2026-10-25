@@ -83,10 +83,10 @@ export function CheckEmail({
         {message} <span className="font-medium break-all">{email}</span>.
       </p>
       <p className="text-sm text-muted-foreground">
-        Open the link in this browser. It expires in 1 hour. Not there? Check your spam folder.
+        The link works once and expires in 1 hour. Not there? Check your spam folder.
       </p>
       <p className="text-xs text-muted-foreground" aria-live="polite">
-        This page continues on its own once you click the link.
+        Opening the link in this browser? This page continues on its own.
       </p>
       <div className="grid gap-2">
         <Button variant="outline" size="lg" onClick={resend} disabled={sending}>
