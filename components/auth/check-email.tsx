@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { openAuthChannel, type AuthTabMessage } from "@/lib/auth/tab-sync";
 import { Button } from "@/components/ui/button";
 
 // Shown after sign-up or a magic-link request. `onResend` sends the email again.
@@ -49,6 +50,18 @@ export function CheckEmail({
       if (event === "SIGNED_IN" && session) proceed();
     });
 
+    // The email link opened in another tab of this browser: claim the
+    // hand-off so that tab tells the user to come back here.
+    const channel = openAuthChannel();
+    if (channel) {
+      channel.onmessage = (event: MessageEvent<AuthTabMessage>) => {
+        if (event.data?.type === "confirmed") {
+          channel.postMessage({ type: "claimed" } satisfies AuthTabMessage);
+          proceed();
+        }
+      };
+    }
+
     // Re-check right away when the user switches back to this tab, and every
     // few seconds while it stays open.
     const onVisible = () => {
@@ -62,6 +75,7 @@ export function CheckEmail({
 
     return () => {
       listener.subscription.unsubscribe();
+      channel?.close();
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
       window.clearInterval(timer);

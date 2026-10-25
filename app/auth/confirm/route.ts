@@ -36,5 +36,9 @@ export async function GET(request: NextRequest) {
     return fail();
   }
 
-  return NextResponse.redirect(new URL(next, request.url));
+  // /auth/confirmed hands off to a waiting "check your email" tab if there is
+  // one, so only one tab continues into the app.
+  const confirmed = new URL("/auth/confirmed", request.url);
+  confirmed.searchParams.set("next", next);
+  return NextResponse.redirect(confirmed);
 }
