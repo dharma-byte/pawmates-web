@@ -21,8 +21,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       }),
   );
 
+  // Pawmates is dark-only: the blurred pet photo backdrops are designed for it.
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           {children}
