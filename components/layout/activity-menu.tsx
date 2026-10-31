@@ -28,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PushToggle } from "@/components/notifications/push-toggle";
 import { CountBadge } from "./count-badge";
 
 const ICONS: Record<NotificationType, typeof Bell> = {
@@ -80,6 +81,10 @@ export function ActivityMenu({ activity }: { activity: ReturnType<typeof useActi
           )}
         </div>
         <DropdownMenuSeparator className="my-0" />
+        {/* Only shows when this device could get notifications but hasn't turned them on. */}
+        <div className="p-2 empty:hidden">
+          <PushToggle variant="compact" />
+        </div>
 
         {unreadMessages > 0 && (
           <>

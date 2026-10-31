@@ -9,11 +9,12 @@ import { ProfileForm } from "@/components/profile/profile-form";
 import { LocationEditor } from "@/components/profile/location-editor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PushToggle } from "@/components/notifications/push-toggle";
 import { AccountTab } from "./account-tab";
 import { PetsTab } from "./pets-tab";
 import { PrivacyTab } from "./privacy-tab";
 
-const TABS = ["profile", "pets", "privacy", "account"] as const;
+const TABS = ["profile", "pets", "privacy", "notifications", "account"] as const;
 type Tab = (typeof TABS)[number];
 
 export function SettingsView() {
@@ -47,6 +48,7 @@ export function SettingsView() {
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="pets">Pets</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
+            <TabsTrigger value="notifications">Alerts</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
@@ -83,6 +85,13 @@ export function SettingsView() {
 
           <TabsContent value="privacy" className="pt-6">
             <PrivacyTab settings={data} onSaved={saved} />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="grid max-w-xl gap-3 pt-6">
+            <PushToggle />
+            <p className="text-sm text-muted-foreground">
+              This is set per device: turn it on separately on your phone and your computer.
+            </p>
           </TabsContent>
 
           <TabsContent value="account" className="pt-6">
