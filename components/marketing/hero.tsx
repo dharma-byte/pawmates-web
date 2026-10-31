@@ -45,10 +45,10 @@ export function Hero() {
       </div>
 
       <div className="relative grid grid-cols-2 gap-4" aria-hidden>
-        <PetTile name="Bruno" detail="Beagle" tone="peach" className="h-60" />
-        <PetTile name="Misty" detail="Persian cat" tone="mint" className="mt-14 h-48" />
-        <PetTile name="Kiwi" detail="Budgie" tone="sky" className="h-48" />
-        <PetTile name="Luna" detail="Indie · 2 km away" tone="sun" className="-mt-14 h-60" />
+        <PetTile name="Bruno" detail="Golden Retriever" tone="peach" photo="/pets/bruno.webp" className="h-60" />
+        <PetTile name="Misty" detail="Persian cat" tone="mint" photo="/pets/misty.webp" className="mt-6 h-44" />
+        <PetTile name="Kiwi" detail="Budgie" tone="sky" photo="/pets/kiwi.webp" className="h-48" />
+        <PetTile name="Luna" detail="Indie · 2 km away" tone="sun" photo="/pets/luna.webp" className="h-60" />
         <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 rounded-2xl border bg-card px-4 py-3 shadow-lg sm:block">
           <p className="text-xs text-muted-foreground">Bruno + Luna</p>
           <p className="font-heading text-lg font-bold text-primary">96% match</p>
