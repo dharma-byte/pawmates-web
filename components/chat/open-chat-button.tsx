@@ -12,11 +12,13 @@ export function OpenChatButton({
   userId,
   label = "Chat",
   variant = "default",
+  size = "default",
   className,
 }: {
   userId: string;
   label?: string;
   variant?: "default" | "secondary" | "outline";
+  size?: "default" | "sm";
   className?: string;
 }) {
   const router = useRouter();
@@ -27,7 +29,7 @@ export function OpenChatButton({
   });
 
   return (
-    <Button variant={variant} className={className} onClick={() => open.mutate()} disabled={open.isPending}>
+    <Button variant={variant} size={size} className={className} onClick={() => open.mutate()} disabled={open.isPending}>
       <MessageCircle aria-hidden /> {open.isPending ? "Opening…" : label}
     </Button>
   );

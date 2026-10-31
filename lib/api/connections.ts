@@ -4,6 +4,7 @@ export const connectionKeys = {
   all: ["connections"] as const,
   mine: ["connections", "mine"] as const,
   detailed: ["connections", "detailed"] as const,
+  friends: ["connections", "friends"] as const,
 };
 
 // How the signed-in member relates to another owner.
@@ -87,6 +88,27 @@ export async function fetchDetailedConnections() {
     pawmates: withOther.filter((c) => c.status === "accepted"),
   };
 }
+
+// Friends page: every Pawmate with all of their pets, newest friends first.
+export async function fetchFriends() {
+  const { pawmates } = await fetchDetailedConnections();
+  const friends = pawmates
+    .filter((c) => c.other)
+    .map((c) => ({ connectionId: c.id, since: c.responded_at ?? c.created_at, person: c.other! }))
+    .sort((a, b) => b.since.localeCompare(a.since));
+  if (friends.length === 0) return [];
+
+  const { data: pets, error } = await createClient()
+    .from("pets")
+    .select(`${PET}, owner_id`)
+    .in("owner_id", friends.map((f) => f.person.id))
+    .order("created_at");
+  if (error) throw error;
+
+  return friends.map((friend) => ({ ...friend, pets: pets.filter((p) => p.owner_id === friend.person.id) }));
+}
+
+export type Friend = Awaited<ReturnType<typeof fetchFriends>>[number];
 
 export async function respondToSniff(connectionId: string, accept: boolean) {
   const { error } = await createClient().rpc("respond_to_sniff", {
