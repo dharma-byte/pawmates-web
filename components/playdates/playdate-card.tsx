@@ -15,17 +15,10 @@ import {
   playdateKeys,
   respondToPlaydate,
 } from "@/lib/api/playdates";
+import { formatEventWhen } from "@/lib/utils/dates";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReviewDialog } from "./review-dialog";
-
-function formatWhen(startsAt: string, endsAt: string) {
-  const start = new Date(startsAt);
-  const end = new Date(endsAt);
-  const day = start.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-  const time = (d: Date) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-  return `${day} · ${time(start)} to ${time(end)}`;
-}
 
 const STATUS_LABEL: Record<string, string> = {
   invited: "Invited",
@@ -86,7 +79,7 @@ export function PlaydateCard({ eventId, otherName }: { eventId: string; otherNam
       </div>
 
       <div className="grid gap-1.5 text-sm">
-        <p className="flex items-center gap-2"><Clock className="size-4 shrink-0 text-muted-foreground" aria-hidden />{formatWhen(playdate.starts_at, playdate.ends_at)}</p>
+        <p className="flex items-center gap-2"><Clock className="size-4 shrink-0 text-muted-foreground" aria-hidden />{formatEventWhen(playdate.starts_at, playdate.ends_at)}</p>
         <p className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden /><span>{playdate.address}</span></p>
         {playdate.description && <p className="rounded-lg bg-muted px-3 py-2">“{playdate.description}”</p>}
         <p className="text-xs text-muted-foreground">

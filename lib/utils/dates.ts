@@ -29,3 +29,12 @@ export function formatDayDivider(iso: string) {
   const label = formatChatTime(iso);
   return label.includes(":") ? "Today" : new Date(iso).toLocaleDateString(undefined, { dateStyle: "medium" });
 }
+
+// Playdates and events: "Sat, 2 Nov · 7:30 am to 9:00 am".
+export function formatEventWhen(startsAt: string, endsAt: string) {
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  const day = start.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  const time = (d: Date) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return `${day} · ${time(start)} to ${time(end)}`;
+}
