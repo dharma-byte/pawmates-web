@@ -133,7 +133,12 @@ function distance(spot: Spot, lat: number, lng: number) {
 }
 
 // .ics file so the playdate lands in Google Calendar, Apple Calendar or Outlook.
-export function downloadIcs(playdate: Playdate) {
+export function downloadIcs(
+  playdate: Pick<Playdate, "id" | "title" | "starts_at" | "ends_at" | "address" | "description"> & {
+    lat?: number | null;
+    lng?: number | null;
+  },
+) {
   const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const escape = (text: string) => text.replace(/[\\,;]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
   const lines = [

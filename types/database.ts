@@ -126,6 +126,12 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
+      foreignKeyName: "conversations_group_id_fkey"
+      columns: ["group_id"]
+isOneToOne: false
+      referencedRelation: "groups"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "conversations_user_high_fkey"
       columns: ["user_high"]
 isOneToOne: false
@@ -184,8 +190,60 @@ isOneToOne: false
       referencedRelation: "conversations"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "events_group_id_fkey"
+      columns: ["group_id"]
+isOneToOne: false
+      referencedRelation: "groups"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "events_host_id_fkey"
       columns: ["host_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"group_members": {
+                  Row: {
+                    "group_id": string,"joined_at": string,"role": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "group_id": string,"joined_at"?: string,"role"?: string,"user_id": string
+                  }
+                  Update: {
+                    "group_id"?: string,"joined_at"?: string,"role"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "group_members_group_id_fkey"
+      columns: ["group_id"]
+isOneToOne: false
+      referencedRelation: "groups"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "group_members_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"groups": {
+                  Row: {
+                    "area_name": string | null,"breed": string | null,"created_at": string,"created_by": string | null,"description": string | null,"id": string,"kind": Database["public"]['Enums']["group_kind"],"location": unknown,"member_count": number,"name": string,"species": Database["public"]['Enums']["pet_species"] | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area_name"?: string | null,"breed"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"id"?: string,"kind": Database["public"]['Enums']["group_kind"],"location"?: unknown,"member_count"?: number,"name": string,"species"?: Database["public"]['Enums']["pet_species"] | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "area_name"?: string | null,"breed"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"id"?: string,"kind"?: Database["public"]['Enums']["group_kind"],"location"?: unknown,"member_count"?: number,"name"?: string,"species"?: Database["public"]['Enums']["pet_species"] | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "groups_created_by_fkey"
+      columns: ["created_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -352,6 +410,9 @@ isOneToOne: false
 "ban_user":
 { Args: { "reason": string,"target": string }; Returns: undefined
                            },
+"cancel_event":
+{ Args: { "event": string }; Returns: undefined
+                           },
 "cancel_playdate":
 { Args: { "event": string }; Returns: undefined
                            },
@@ -361,8 +422,17 @@ isOneToOne: false
 "compatibility_score":
 { Args: { "pet_a": string,"pet_b": string }; Returns: number
                            },
+"create_group":
+{ Args: { "breed"?: string,"description"?: string,"kind": Database["public"]['Enums']["group_kind"],"name": string,"species"?: Database["public"]['Enums']["pet_species"] }; Returns: string
+                           },
+"create_group_event":
+{ Args: { "address": string,"capacity"?: number,"description"?: string,"duration_minutes": number,"g": string,"lat": number,"lng": number,"my_pet_ids"?: (string)[],"place_name": string,"starts_at": string,"title": string }; Returns: string
+                           },
 "create_playdate":
 { Args: { "address": string,"conv": string,"duration_minutes": number,"lat": number,"lng": number,"my_pet_ids"?: (string)[],"note"?: string,"place_name": string,"starts_at": string }; Returns: string
+                           },
+"delete_group":
+{ Args: { "g": string }; Returns: undefined
                            },
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
@@ -374,6 +444,11 @@ isOneToOne: false
                            },
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"find_groups":
+{ Args: { "kind_filter"?: Database["public"]['Enums']["group_kind"],"radius_km"?: number,"search"?: string }; Returns: {
+              "area_name": string,"breed": string,"created_at": string,"description": string,"distance_km": number,"id": string,"kind": Database["public"]['Enums']["group_kind"],"member_count": number,"my_role": string,"name": string,"species": Database["public"]['Enums']["pet_species"]
+            }[]
                            },
 "get_my_conversations":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -387,6 +462,12 @@ isOneToOne: false
                            },
 "get_or_create_direct_conversation":
 { Args: { "other_user": string }; Returns: string
+                           },
+"join_group":
+{ Args: { "g": string }; Returns: string
+                           },
+"leave_group":
+{ Args: { "g": string }; Returns: undefined
                            },
 "mark_conversation_read":
 { Args: { "conv": string }; Returns: undefined
@@ -415,6 +496,9 @@ isOneToOne: false
 { Args: { "conv": string }; Returns: {
               "lat": number,"lng": number
             }[]
+                           },
+"remove_group_member":
+{ Args: { "g": string,"member": string }; Returns: undefined
                            },
 "resolve_report":
 { Args: { "decision": Database["public"]['Enums']["report_status"],"notes"?: string,"report_id": string }; Returns: undefined
@@ -446,12 +530,26 @@ isOneToOne: false
 "review_verification":
 { Args: { "decision": Database["public"]['Enums']["verification_request_status"],"request_id": string,"review_notes"?: string }; Returns: undefined
                            },
+"rsvp_event":
+{ Args: { "answer": Database["public"]['Enums']["rsvp_status"],"event": string,"my_pet_ids"?: (string)[] }; Returns: Database["public"]['Enums']["rsvp_status"]
+                           },
+"set_group_admin":
+{ Args: { "g": string,"make_admin": boolean,"member": string }; Returns: undefined
+                           },
 "unban_user":
 { Args: { "target": string }; Returns: undefined
+                           },
+"upcoming_events":
+{ Args: { "group_filter"?: string,"radius_km"?: number }; Returns: {
+              "address": string,"capacity": number,"description": string,"distance_km": number,"ends_at": string,"going_count": number,"group_id": string,"group_name": string,"host_id": string,"id": string,"my_status": Database["public"]['Enums']["rsvp_status"],"place_name": string,"starts_at": string,"status": Database["public"]['Enums']["event_status"],"title": string,"waitlist_count": number
+            }[]
+                           },
+"update_group":
+{ Args: { "description"?: string,"g": string,"name": string }; Returns: undefined
                            }
           }
           Enums: {
-            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
+            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","group_kind": "breed"|"area"|"interest","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -571,7 +669,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
+            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"group_kind": ["breed", "area", "interest"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
           }
         }
 } as const
