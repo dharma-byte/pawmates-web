@@ -6,9 +6,9 @@ import { useEffect } from "react";
 import { CircleMarker, MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { LatLng } from "@/lib/api/geocode";
 
-// Where the map opens before a member picks a spot (Bengaluru). Members can
-// search for or tap anywhere; nothing about this is shown as site copy.
-const DEFAULT_CENTER: LatLng = { lat: 12.9716, lng: 77.5946 };
+// Where the map opens before a member picks a spot (Hyderabad, Telangana).
+// Members can search for or tap anywhere; nothing about this is shown as site copy.
+const DEFAULT_CENTER: LatLng = { lat: 17.385, lng: 78.4867 };
 
 export default function LocationPickerMap({
   value,
