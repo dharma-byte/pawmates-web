@@ -34,7 +34,7 @@ export function Inbox() {
       )}
 
       {data && data.length > 0 && (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y overflow-hidden rounded-xl border bg-card/85 backdrop-blur-md">
           {data.map((item) => (
             <li key={item.conversation_id}>
               <InboxRow item={item} />
