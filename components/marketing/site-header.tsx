@@ -46,7 +46,7 @@ export function SiteHeader({ onHome = true }: { onHome?: boolean }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 bg-background/90 backdrop-blur transition-shadow",
+        "sticky top-0 z-30 bg-background/70 backdrop-blur-xl transition-shadow",
         scrolled && "shadow-[0_1px_0_0_var(--border)]",
       )}
     >

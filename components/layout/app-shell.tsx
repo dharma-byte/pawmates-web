@@ -8,6 +8,7 @@ import { cn } from "cn";
 import { useActivity } from "@/hooks/use-activity";
 import { Logo } from "@/components/shared/logo";
 import { AccountMenu } from "./account-menu";
+import { Backdrop, backdropForPath } from "./backdrop";
 import { ActivityMenu } from "./activity-menu";
 import { CountBadge } from "./count-badge";
 import { CreateMenu } from "./create-menu";
@@ -21,7 +22,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-full flex-1">
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 border-r bg-sidebar px-4 py-5 md:flex">
+      <Suspense fallback={<Backdrop name="home" />}>
+        <ActiveBackdrop />
+      </Suspense>
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 border-r bg-sidebar/80 px-4 py-5 backdrop-blur-xl md:flex">
         <Logo href="/home" className="px-2" />
         <CreateMenu variant="sidebar" />
         <Suspense fallback={<SidebarNav badges={activity.badges} pathname={null} />}>
@@ -36,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b bg-background/95 px-4 backdrop-blur md:justify-end">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b bg-background/70 px-4 backdrop-blur-xl md:justify-end">
           <Logo href="/home" className="md:hidden" />
           <div className="flex items-center gap-1">
             <ActivityMenu activity={activity} />
@@ -56,6 +60,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
 // The current path is request-time data on dynamic routes like /chat/[id],
 // so only these small wrappers read it, inside Suspense boundaries.
+function ActiveBackdrop() {
+  return <Backdrop name={backdropForPath(usePathname())} />;
+}
+
 function ActiveSidebarNav({ badges }: { badges: Record<string, number> }) {
   return <SidebarNav badges={badges} pathname={usePathname()} />;
 }
@@ -118,7 +126,7 @@ function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-20 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
     >
       <ul className="grid grid-cols-5 items-end">
         <li>{tab(home)}</li>

@@ -1,5 +1,6 @@
 import { Events, EarlyMembers, Organisers } from "@/components/marketing/community-sections";
 import { Faq, FinalCta } from "@/components/marketing/faq-and-cta";
+import { Backdrop } from "@/components/layout/backdrop";
 import { Hero } from "@/components/marketing/hero";
 import { Features, HowItWorks, MatchExplainer, Safety } from "@/components/marketing/product-sections";
 import { SiteFooter } from "@/components/marketing/site-footer";
@@ -10,6 +11,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 export default function LandingPage() {
   return (
     <div className="flex flex-1 flex-col">
+      <Backdrop name="homepage" />
       <SiteHeader />
       <main className="flex-1">
         <Hero />
