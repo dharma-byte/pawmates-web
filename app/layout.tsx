@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   description:
     "Find playmates for your dog nearby, chat in real time, join walking groups and organise playdates and dog meetups.",
   applicationName: "Pawmates",
+  // Home-screen app on iPhone (Android reads app/manifest.ts).
+  appleWebApp: { capable: true, title: "Pawmates", statusBarStyle: "black" },
 };
 
 export const viewport: Viewport = {
