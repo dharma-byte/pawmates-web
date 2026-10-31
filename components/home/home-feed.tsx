@@ -11,7 +11,7 @@ import { fetchMe, firstName, meKey } from "@/lib/api/me";
 import { PetCard } from "@/components/pets/pet-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EventsSoon, ProfileStrength, RequestsWaiting, SafetyTip, UnreadChats } from "./dashboard-cards";
+import { EventsSoon, PendingReviews, ProfileStrength, RequestsWaiting, SafetyTip, UnreadChats } from "./dashboard-cards";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -94,6 +94,7 @@ export function HomeFeed() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="grid gap-6">
+          <PendingReviews />
           <RequestsWaiting />
 
           <section aria-labelledby="nearby" className="grid gap-4">

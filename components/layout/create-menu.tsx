@@ -31,8 +31,9 @@ export function CreateMenu({ variant }: { variant: "sidebar" | "tab" }) {
         <DropdownMenuItem render={<Link href="/settings?tab=pets" />}>
           <PawPrint aria-hidden /> Add a pet
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <CalendarPlus aria-hidden /> Plan a playdate <span className="ml-auto text-xs">soon</span>
+        {/* Playdates are planned with a Pawmate inside a chat (📅 button). */}
+        <DropdownMenuItem render={<Link href="/chat" />}>
+          <CalendarPlus aria-hidden /> Plan a playdate <span className="ml-auto text-xs text-muted-foreground">in chat</span>
         </DropdownMenuItem>
         <DropdownMenuItem disabled>
           <Radar aria-hidden /> Report a lost pet <span className="ml-auto text-xs">soon</span>

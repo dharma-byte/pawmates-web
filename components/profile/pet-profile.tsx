@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheck, Heart, MapPin, PawPrint, Pencil, Syringe, ThumbsDown } from "lucide-react";
+import { BadgeCheck, Heart, MapPin, PawPrint, Pencil, Star, Syringe, ThumbsDown } from "lucide-react";
 import { cn } from "cn";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { fetchMe, meKey } from "@/lib/api/me";
+import { fetchPlaymateStats, playdateKeys } from "@/lib/api/playdates";
 import { ageFrom, fetchCompatibility, fetchPet, profileKeys } from "@/lib/api/profiles";
 import { ENERGY_LEVELS, GENDERS, PLAY_STYLES, SIZES, SPECIES, TEMPERAMENTS, type Option } from "@/lib/constants/pets";
 import { SniffDialog } from "@/components/discover/sniff-dialog";
@@ -31,6 +32,7 @@ export function PetProfile() {
   const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
   const { data: connections } = useQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
   const { data: pet, isPending, error } = useQuery({ queryKey: profileKeys.pet(id), queryFn: () => fetchPet(id) });
+  const { data: playmate } = useQuery({ queryKey: playdateKeys.playmate(id), queryFn: () => fetchPlaymateStats(id) });
 
   const myPetId = me?.pets[0]?.id;
   const isMine = !!me && pet?.owner_id === me.id;
@@ -113,6 +115,11 @@ export function PetProfile() {
             {owner.verification_status === "verified" && (
               <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-teal">
                 <BadgeCheck className="size-3.5" aria-hidden /> Verified owner
+              </span>
+            )}
+            {playmate?.good_playmate && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
+                <Star className="size-3.5 fill-orange text-orange" aria-hidden /> Good playmate · {playmate.average_rating} ({playmate.reviews})
               </span>
             )}
           </div>

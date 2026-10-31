@@ -4,7 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Circle, MessageCircle, PawPrint, ShieldCheck, Users } from "lucide-react";
+import { CheckCircle2, Circle, MessageCircle, PawPrint, ShieldCheck, Star, Users } from "lucide-react";
+import { fetchPendingReviews, playdateKeys } from "@/lib/api/playdates";
+import { ReviewDialog } from "@/components/playdates/review-dialog";
 import { toast } from "sonner";
 import { chatKeys, fetchInbox } from "@/lib/api/chat";
 import { connectionKeys, fetchDetailedConnections, respondToSniff, type DetailedConnection } from "@/lib/api/connections";
@@ -99,6 +101,41 @@ function RequestRow({
         <Button size="sm" variant="outline" onClick={() => onAnswer(false)} disabled={busy}>Decline</Button>
       </div>
     </li>
+  );
+}
+
+// "How did it go?": finished playdates still waiting for this member's review.
+export function PendingReviews() {
+  const [reviewing, setReviewing] = useState<{ eventId: string; petId: string; petName: string } | null>(null);
+  const { data } = useQuery({ queryKey: playdateKeys.pendingReviews, queryFn: fetchPendingReviews });
+  if (!data || data.length === 0) return null;
+
+  return (
+    <DashboardCard title="How did your playdates go?">
+      <ul className="grid gap-3">
+        {data.slice(0, 3).map((item) => (
+          <li key={`${item.event_id}-${item.pet_id}`} className="flex items-center gap-3">
+            <span className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+              {item.pet_photo ? (
+                <Image src={item.pet_photo} alt="" fill sizes="48px" className="object-cover" />
+              ) : (
+                <PawPrint className="absolute inset-0 m-auto size-5 text-muted-foreground" aria-hidden />
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{item.pet_name}</p>
+              <p className="truncate text-sm text-muted-foreground">{item.title}</p>
+            </div>
+            <Button size="sm" onClick={() => setReviewing({ eventId: item.event_id, petId: item.pet_id, petName: item.pet_name })}>
+              <Star aria-hidden /> Review
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {reviewing && (
+        <ReviewDialog eventId={reviewing.eventId} petId={reviewing.petId} petName={reviewing.petName} onClose={() => setReviewing(null)} />
+      )}
+    </DashboardCard>
   );
 }
 
