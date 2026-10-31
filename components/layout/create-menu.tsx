@@ -11,11 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CreateGroupDialog } from "@/components/groups/create-group-dialog";
+import { ReportLostDialog } from "@/components/lost/report-lost-dialog";
 
-// The ＋ action: things members create. Upcoming actions are listed but
-// disabled so people see what's coming.
+// The ＋ action: things members create, with Report a lost dog always one tap away.
 export function CreateMenu({ variant }: { variant: "bar" | "tab" }) {
   const [creatingGroup, setCreatingGroup] = useState(false);
+  const [reportingLost, setReportingLost] = useState(false);
   return (
     <>
       <DropdownMenu>
@@ -33,7 +34,7 @@ export function CreateMenu({ variant }: { variant: "bar" | "tab" }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align={variant === "tab" ? "center" : "end"} className="w-60">
           <DropdownMenuItem render={<Link href="/settings?tab=pets" />}>
-            <PawPrint aria-hidden /> Add a pet
+            <PawPrint aria-hidden /> Add a dog
           </DropdownMenuItem>
           {/* Playdates are planned with a Pawmate inside a chat (📅 button). */}
           <DropdownMenuItem render={<Link href="/chat" />}>
@@ -46,12 +47,13 @@ export function CreateMenu({ variant }: { variant: "bar" | "tab" }) {
           <DropdownMenuItem render={<Link href="/groups" />}>
             <CalendarPlus aria-hidden /> Host an event <span className="ml-auto text-xs text-muted-foreground">in a group</span>
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Radar aria-hidden /> Report a lost pet <span className="ml-auto text-xs">soon</span>
+          <DropdownMenuItem onClick={() => setReportingLost(true)} className="text-coral">
+            <Radar aria-hidden /> Report a lost dog
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       {creatingGroup && <CreateGroupDialog onClose={() => setCreatingGroup(false)} />}
+      {reportingLost && <ReportLostDialog onClose={() => setReportingLost(false)} />}
     </>
   );
 }

@@ -80,7 +80,7 @@ export function Features() {
           </div>
         </FeatureCard>
 
-        <FeatureCard icon={Radar} title="Lost and found alerts" text="Report a lost dog and everyone nearby is alerted straight away." soon className="md:col-span-2" />
+        <FeatureCard icon={Radar} title="Lost and found alerts" text="Report a lost dog and everyone nearby is alerted straight away." className="md:col-span-2" />
       </div>
     </Section>
   );

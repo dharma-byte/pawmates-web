@@ -12,6 +12,7 @@ import { fetchMe, firstName, meKey } from "@/lib/api/me";
 import { PetCard } from "@/components/pets/pet-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LostAlertBanner, LostAndFoundCard } from "@/components/lost/lost-home";
 import { EventsSoon, PendingReviews, ProfileStrength, RequestsWaiting, SafetyTip, UnreadChats } from "./dashboard-cards";
 
 function greeting() {
@@ -95,6 +96,7 @@ export function HomeFeed() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="grid gap-6">
+          <LostAlertBanner />
           <PendingReviews />
           <RequestsWaiting />
 
@@ -149,6 +151,7 @@ export function HomeFeed() {
           <ProfileStrength me={me} />
           <SafetyTip />
           <EventsSoon />
+          <LostAndFoundCard />
         </aside>
       </div>
     </div>
