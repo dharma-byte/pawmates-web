@@ -74,7 +74,7 @@ export function CreateGroupDialog({ onClose }: { onClose: () => void }) {
               value={name}
               onChange={(event) => setName(event.target.value)}
               maxLength={60}
-              placeholder={kind === "breed" ? "Bengaluru Beagle Club" : kind === "area" ? "Indiranagar Dog Walkers" : "Rescue Pet Parents"}
+              placeholder={kind === "breed" ? "Beagle Buddies" : kind === "area" ? "Riverside Dog Walkers" : "Rescue Pet Parents"}
               className="h-10"
             />
           </label>

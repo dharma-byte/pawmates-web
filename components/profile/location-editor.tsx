@@ -74,7 +74,7 @@ export function LocationEditor({
       return;
     }
     if (areaName.trim().length < 2) {
-      setError("Give your area a name, like “Indiranagar, Bengaluru”.");
+      setError("Give your area a name, like your neighbourhood and city.");
       return;
     }
     setBusy("save");
@@ -114,7 +114,7 @@ export function LocationEditor({
             id="area-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Indiranagar, Bengaluru"
+            placeholder="Neighbourhood, city"
             className="h-10"
           />
           <Button type="submit" variant="secondary" className="h-10" disabled={busy !== null}>

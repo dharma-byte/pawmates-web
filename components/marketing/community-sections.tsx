@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { CalendarPlus, HeartHandshake, Store, Trophy, Users } from "lucide-react";
-import { SITE } from "@/lib/site";
 import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./section";
 
@@ -11,13 +10,13 @@ export function Events() {
     <Section
       id="events"
       eyebrow="Events"
-      title={`Playdates and pet events in ${SITE.launchCity}`}
+      title="Playdates and pet events near you"
       intro="Group walks, breed meetups, adoption drives and training workshops, all with a real map pin."
     >
       <div className="grid gap-6 md:grid-cols-3">
         {[
           { day: "Weekend walks", text: "Area walking groups meeting at parks you already go to." },
-          { day: "Breed meetups", text: "Beagles of Bengaluru, Indie dog clubs, cat parents and more." },
+          { day: "Breed meetups", text: "Beagle clubs, Indie dog groups, cat parents and more." },
           { day: "Adoption drives", text: "Verified shelters and rescues finding homes for pets." },
         ].map((event) => (
           <article key={event.day} className="grid content-start gap-2 rounded-3xl border border-dashed bg-card p-6">
@@ -62,7 +61,7 @@ export function EarlyMembers() {
       <div className="mx-auto grid w-full max-w-3xl gap-5 rounded-3xl bg-secondary p-8 text-center text-secondary-foreground">
         <Trophy className="mx-auto size-9 text-coral" aria-hidden />
         <p className="text-lg">
-          Pawmates is in its private alpha in {SITE.launchCity}. Early members shape what we build next, and
+          Pawmates is in its private alpha. Early members shape what we build next, and
           their pets will be the first friends everyone else meets.
         </p>
         <Link href="/signup" className={buttonVariants({ size: "lg", className: "mx-auto h-12 rounded-full px-7" })}>

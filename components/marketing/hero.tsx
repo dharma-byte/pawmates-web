@@ -1,5 +1,4 @@
 import { MapPin, Search, ShieldCheck } from "lucide-react";
-import { SITE } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { PetTile } from "./pet-tile";
 
@@ -30,7 +29,7 @@ export function Hero() {
             <input
               id="hero-area"
               name="area"
-              placeholder={`Your area, e.g. Indiranagar, ${SITE.launchCity}`}
+              placeholder="Your neighbourhood and city"
               className="h-11 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
             />
           </div>

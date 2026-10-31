@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
-import { SITE } from "@/lib/site";
 import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./section";
 
@@ -9,7 +8,7 @@ const FAQS = [
   { q: "Which pets can join?", a: "Dogs, cats, birds, rabbits and other pets. Matching works best for dogs today, and we're adding more for other species." },
   { q: "Why do I need to be verified?", a: "People and pets meet in person, so a person on our team checks a photo of you with your pet before your profile is visible. It usually takes less than a day." },
   { q: "Who can see where I live?", a: "Nobody. Others see only your area name and a rounded distance like “about 2 km away”, calculated from a point moved away from your real location." },
-  { q: "Which cities is Pawmates in?", a: `We're starting in ${SITE.launchCity} so every neighbourhood has enough pets to meet. More cities will follow.` },
+  { q: "Where can I use Pawmates?", a: "Wherever you and your pet live. Pawmates shows verified pets, groups and events near the area you set, so the more neighbours join, the more friends there are to meet." },
   { q: "Can I sell or buy pets here?", a: "No. Pawmates never allows pet sales. Adoption listings will come only from verified shelters and rescues." },
 ];
 

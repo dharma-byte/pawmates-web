@@ -169,7 +169,7 @@ export function HostEventDialog({
 
             <form onSubmit={search} className="flex gap-2">
               <label htmlFor="event-place-search" className="sr-only">Search for a place</label>
-              <Input id="event-place-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search: Cubbon Park, a pet café…" className="h-10" />
+              <Input id="event-place-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search: a park, a pet café…" className="h-10" />
               <Button type="submit" variant="secondary" className="h-10" aria-label="Search">
                 <Search aria-hidden />
               </Button>

@@ -5,7 +5,6 @@
 export const SITE = {
   name: "Pawmates",
   tagline: "Where pets make friends, and so do their humans.",
-  launchCity: "Bengaluru",
   contactEmail: null as string | null,
   grievanceOfficer: null as string | null,
   legalUpdated: "31 October 2026",

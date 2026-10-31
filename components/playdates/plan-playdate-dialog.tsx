@@ -151,7 +151,7 @@ export function PlanPlaydateDialog({
 
             <form onSubmit={search} className="flex gap-2">
               <label htmlFor="spot-search" className="sr-only">Search for another place</label>
-              <Input id="spot-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Or search: Cubbon Park, a pet café…" className="h-10" />
+              <Input id="spot-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Or search: a park, a pet café…" className="h-10" />
               <Button type="submit" variant="secondary" className="h-10" aria-label="Search">
                 <Search aria-hidden />
               </Button>

@@ -67,7 +67,7 @@ export function Features() {
         <FeatureCard icon={CalendarHeart} title="Groups and events" text="Breed clubs, area walking groups, playdates and pet events with RSVP." soon>
           <div className="flex items-center gap-3 rounded-2xl bg-background p-3 text-sm shadow-sm">
             <span className="grid size-12 place-items-center rounded-xl bg-accent font-heading font-bold text-accent-foreground">SAT</span>
-            <span><span className="block font-semibold">Beagle morning walk</span><span className="block text-xs text-muted-foreground">Cubbon Park · 7:00 AM</span></span>
+            <span><span className="block font-semibold">Beagle morning walk</span><span className="block text-xs text-muted-foreground">City Park · 7:00 AM</span></span>
           </div>
         </FeatureCard>
 

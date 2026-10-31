@@ -28,7 +28,7 @@ export function SiteFooter() {
         </FooterColumn>
       </div>
       <p className="mx-auto w-full max-w-6xl px-4 pb-8 text-xs text-muted-foreground">
-        © {SITE.copyrightYear} {SITE.name}. Made for pets in {SITE.launchCity}.
+        © {SITE.copyrightYear} {SITE.name}. Made for pets.
       </p>
     </footer>
   );
