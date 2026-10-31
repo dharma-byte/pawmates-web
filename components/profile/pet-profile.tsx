@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { BadgeCheck, Heart, MapPin, PawPrint, Pencil, Star, Syringe, ThumbsDown } from "lucide-react";
 import { cn } from "cn";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
@@ -29,8 +30,8 @@ export function PetProfile() {
   const { id } = useParams<{ id: string }>();
   const [photoIndex, setPhotoIndex] = useState(0);
   const [sniffOpen, setSniffOpen] = useState(false);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
-  const { data: connections } = useQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: connections } = useSharedQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
   const { data: pet, isPending, error } = useQuery({ queryKey: profileKeys.pet(id), queryFn: () => fetchPet(id) });
   const { data: playmate } = useQuery({ queryKey: playdateKeys.playmate(id), queryFn: () => fetchPlaymateStats(id) });
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { BadgeCheck, CalendarDays, MapPin, PawPrint, Pencil, UserRound } from "lucide-react";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { fetchMe, meKey } from "@/lib/api/me";
@@ -20,8 +21,8 @@ import { NotAvailable } from "./not-available";
 export function OwnerProfile() {
   const { username } = useParams<{ username: string }>();
   const [sniffing, setSniffing] = useState<SniffTarget | null>(null);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
-  const { data: connections } = useQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: connections } = useSharedQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
   const { data: profile, isPending, error } = useQuery({
     queryKey: profileKeys.byUsername(username),
     queryFn: () => fetchProfileByUsername(username),

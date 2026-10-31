@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { Compass, Layers, LayoutGrid, Map as MapIcon, SlidersHorizontal } from "lucide-react";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { fetchMyLocation, fetchNearbyPets, type NearbyPet } from "@/lib/api/discover";
@@ -99,8 +100,8 @@ export function DiscoverView() {
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
     setFilters((current) => ({ ...current, [key]: value }));
 
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
-  const { data: connections } = useQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: connections } = useSharedQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
 
   const args = {
     radius_km: Number(filters.radius),

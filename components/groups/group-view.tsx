@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import {
   ArrowLeft,
   CalendarPlus,
@@ -54,7 +55,7 @@ export function GroupView() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [hosting, setHosting] = useState(false);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
   const { data: group, isPending, error } = useQuery({ queryKey: groupKeys.detail(id), queryFn: () => fetchGroup(id) });
 
   const refresh = () => {

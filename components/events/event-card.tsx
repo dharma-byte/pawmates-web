@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { CalendarDays, CalendarPlus, Clock, MapPin, Navigation, Users } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "cn";
@@ -41,7 +42,7 @@ export function EventCard({
 }) {
   const queryClient = useQueryClient();
   const [now] = useState(() => Date.now());
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
   const location = useQuery({ queryKey: [...eventKeys.detail(event.id), "location"], queryFn: () => fetchEventLocation(event.id) });
 
   const refresh = () => {

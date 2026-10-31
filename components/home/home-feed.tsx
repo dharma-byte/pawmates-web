@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { Compass, PawPrint, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { discoverKeys, fetchNearbyPets } from "@/lib/api/discover";
@@ -44,7 +45,7 @@ function Greeting({ name }: { name: string | null }) {
 }
 
 export function HomeFeed() {
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
   const myPet = me?.pets[0];
   const nearbyArgs = { radius_km: 10, page_size: 6, my_pet_id: myPet?.id };
   const nearby = useQuery({

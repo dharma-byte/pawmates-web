@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "cn";
 import { useActivity } from "@/hooks/use-activity";
-import { useHydrated } from "@/hooks/use-hydrated";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/shared/logo";
 import { AccountMenu } from "./account-menu";
 import { Backdrop, backdropForPath } from "./backdrop";
@@ -22,11 +20,6 @@ import { APP_NAV, isActivePath } from "./nav-config";
 // Settings is in the account menu.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const activity = useActivity();
-  // Pages read the same React Query cache as this shell (inbox, requests, me).
-  // The shell can fill it before a page segment hydrates, which would make the
-  // page's first render differ from the server HTML. Every page here loads its
-  // data in the browser anyway, so render pages only once hydrated.
-  const hydrated = useHydrated();
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -50,23 +43,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:px-8 md:pb-10">
-        {hydrated ? children : <PageSkeleton />}
-      </main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:px-8 md:pb-10">{children}</main>
 
       <Suspense fallback={<TabBar badges={activity.badges} pathname={null} />}>
         <ActiveTabBar badges={activity.badges} />
       </Suspense>
-    </div>
-  );
-}
-
-function PageSkeleton() {
-  return (
-    <div className="grid gap-4" aria-hidden>
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-40 w-full rounded-2xl" />
-      <Skeleton className="h-40 w-full rounded-2xl" />
     </div>
   );
 }

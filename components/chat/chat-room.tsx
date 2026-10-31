@@ -10,6 +10,7 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { ArrowLeft, Ban, Bell, BellOff, EllipsisVertical, Flag, ShieldCheck, UserRound, Users } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -78,7 +79,7 @@ export function ChatRoom() {
   const stickToBottom = useRef(true);
   const [reporting, setReporting] = useState<{ type: "message" | "profile"; id: string } | null>(null);
   const [planning, setPlanning] = useState(false);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
 
   const conversation = useQuery({
     queryKey: chatKeys.conversation(conversationId),

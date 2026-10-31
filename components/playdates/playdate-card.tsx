@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { CalendarDays, CalendarPlus, Clock, MapPin, Navigation, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "cn";
@@ -33,7 +34,7 @@ export function PlaydateCard({ eventId, otherName }: { eventId: string; otherNam
   const queryClient = useQueryClient();
   const [now] = useState(() => Date.now());
   const [reviewing, setReviewing] = useState<{ petId: string; petName: string } | null>(null);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
   const { data: playdate, isPending } = useQuery({
     queryKey: playdateKeys.detail(eventId),
     queryFn: () => fetchPlaydate(eventId),

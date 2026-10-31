@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { Ellipsis, MapPin, PawPrint, Search, UserMinus, UserPlus, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -28,7 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Your Pawmates in one place: message them, see their pets, open profiles.
 export function FriendsView() {
-  const { data: states } = useQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
+  const { data: states } = useSharedQuery({ queryKey: connectionKeys.mine, queryFn: fetchMyConnections });
   const waitingRequests = [...(states?.values() ?? [])].filter((state) => state === "received").length;
   const [query, setQuery] = useState("");
   const { data, isPending, error } = useQuery({ queryKey: connectionKeys.friends, queryFn: fetchFriends });

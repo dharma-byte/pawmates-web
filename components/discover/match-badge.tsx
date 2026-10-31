@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { Info } from "lucide-react";
 import { cn } from "cn";
 import { fetchMatchBreakdown, matchKeys } from "@/lib/api/discover";
@@ -29,7 +30,7 @@ export function MatchBadge({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
+  const { data: me } = useSharedQuery({ queryKey: meKey, queryFn: fetchMe });
   const myPet = me?.pets[0];
   const breakdown = useQuery({
     queryKey: matchKeys.breakdown(myPet?.id ?? "", petId),

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { CheckCircle2, Circle, MessageCircle, PawPrint, ShieldCheck, Star, Users } from "lucide-react";
 import { eventKeys, fetchUpcomingEvents } from "@/lib/api/groups";
 import { fetchPendingReviews, playdateKeys } from "@/lib/api/playdates";
@@ -141,7 +142,7 @@ export function PendingReviews() {
 }
 
 export function UnreadChats() {
-  const { data } = useQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
+  const { data } = useSharedQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
   const recent = (data ?? []).slice(0, 4);
 
   return (

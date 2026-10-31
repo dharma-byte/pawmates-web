@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useSharedQuery } from "@/hooks/use-shared-query";
 import { BellOff, CalendarDays, Camera, MapPin, MessageCircle, UserRound, Users } from "lucide-react";
 import { cn } from "cn";
 import { chatKeys, chatTitle, fetchInbox, type InboxItem } from "@/lib/api/chat";
@@ -11,7 +11,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function Inbox() {
-  const { data, isPending, error } = useQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
+  const { data, isPending, error } = useSharedQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
 
   return (
     <div className="grid gap-6">
