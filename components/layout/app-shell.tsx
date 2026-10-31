@@ -2,198 +2,127 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Compass, House, LogOut, MessageCircle, Settings, Shield, UserRound, Users } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Settings } from "lucide-react";
 import { cn } from "cn";
-import { chatKeys, fetchInbox } from "@/lib/api/chat";
-import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
-import { fetchMe, meKey } from "@/lib/api/me";
-import { useInboxRealtime } from "@/hooks/use-chat-channel";
+import { useActivity } from "@/hooks/use-activity";
 import { Logo } from "@/components/shared/logo";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { AccountMenu } from "./account-menu";
+import { ActivityMenu } from "./activity-menu";
+import { CountBadge } from "./count-badge";
+import { CreateMenu } from "./create-menu";
+import { APP_NAV, isActivePath } from "./nav-config";
 
-const TABS = [
-  { href: "/home", label: "Home", icon: House },
-  { href: "/discover", label: "Discover", icon: Compass },
-  { href: "/requests", label: "Requests", icon: Users },
-  { href: "/chat", label: "Chat", icon: MessageCircle },
-];
-
+// The signed-in app: deliberately different from the marketing site.
+//   desktop  left sidebar + slim top bar (activity, account)
+//   phone    top bar + bottom tab bar with a centre ＋
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
-
-  // Badges: unread chats (live via Realtime) and unanswered Sniff requests.
-  const { data: inbox } = useQuery({ queryKey: chatKeys.inbox, queryFn: fetchInbox });
-  const { data: connections } = useQuery({
-    queryKey: connectionKeys.mine,
-    queryFn: fetchMyConnections,
-    refetchOnWindowFocus: true,
-  });
-  useInboxRealtime(() => queryClient.invalidateQueries({ queryKey: chatKeys.inbox }));
-  const badges: Record<string, number> = {
-    "/chat": inbox?.filter((c) => c.unread_count > 0 && !c.muted).length ?? 0,
-    "/requests": [...(connections?.values() ?? [])].filter((state) => state === "received").length,
-  };
-
-  async function signOut() {
-    await fetch("/auth/signout", { method: "POST" });
-    // Drop everything cached for this member before leaving.
-    queryClient.clear();
-    router.replace("/");
-    router.refresh();
-  }
+  const activity = useActivity();
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
-          <Logo href="/home" />
+    <div className="flex min-h-full flex-1">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 border-r bg-sidebar px-4 py-5 md:flex">
+        <Logo href="/home" className="px-2" />
+        <CreateMenu variant="sidebar" />
+        <Suspense fallback={<SidebarNav badges={activity.badges} pathname={null} />}>
+          <ActiveSidebarNav badges={activity.badges} />
+        </Suspense>
+        <Link
+          href="/settings"
+          className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          <Settings className="size-5" aria-hidden /> Settings
+        </Link>
+      </aside>
 
-          <Suspense fallback={<NavTabs variant="header" badges={badges} pathname={null} />}>
-            <ActiveNavTabs variant="header" badges={badges} />
-          </Suspense>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b bg-background/95 px-4 backdrop-blur md:justify-end">
+          <Logo href="/home" className="md:hidden" />
+          <div className="flex items-center gap-1">
+            <ActivityMenu activity={activity} />
+            <AccountMenu />
+          </div>
+        </header>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              aria-label="Account menu"
-              className="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <Avatar>
-                {me?.avatar_url && <AvatarImage src={me.avatar_url} alt="" />}
-                <AvatarFallback>{me?.full_name?.[0]?.toUpperCase() ?? <UserRound className="size-4" />}</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>
-                  <span className="block truncate font-medium text-foreground">{me?.full_name ?? "…"}</span>
-                  <span className="block truncate text-xs font-normal">{me?.email}</span>
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              {me?.username && (
-                <DropdownMenuItem render={<Link href={`/u/${me.username}`} />}>
-                  <UserRound aria-hidden /> My profile
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem render={<Link href="/settings" />}>
-                <Settings aria-hidden /> Settings
-              </DropdownMenuItem>
-              {me?.isAdmin && (
-                <DropdownMenuItem render={<Link href="/admin" />}>
-                  <Shield aria-hidden /> Admin
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>
-                <LogOut aria-hidden /> Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:px-8 md:pb-10">{children}</main>
+      </div>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:pb-10">{children}</main>
-
-      {/* Mobile tab bar: most members use Pawmates on a phone, outdoors. */}
-      <Suspense fallback={<NavTabs variant="bottom" badges={badges} pathname={null} />}>
-        <ActiveNavTabs variant="bottom" badges={badges} />
+      <Suspense fallback={<TabBar badges={activity.badges} pathname={null} />}>
+        <ActiveTabBar badges={activity.badges} />
       </Suspense>
     </div>
   );
 }
 
 // The current path is request-time data on dynamic routes like /chat/[id],
-// so only this small piece reads it, inside a Suspense boundary.
-function ActiveNavTabs(props: { variant: "header" | "bottom"; badges: Record<string, number> }) {
-  return <NavTabs {...props} pathname={usePathname()} />;
+// so only these small wrappers read it, inside Suspense boundaries.
+function ActiveSidebarNav({ badges }: { badges: Record<string, number> }) {
+  return <SidebarNav badges={badges} pathname={usePathname()} />;
 }
 
-function NavTabs({
-  variant,
-  badges,
-  pathname,
-}: {
-  variant: "header" | "bottom";
-  badges: Record<string, number>;
-  pathname: string | null;
-}) {
-  const isActive = (href: string) => !!pathname && (pathname === href || pathname.startsWith(`${href}/`));
+function ActiveTabBar({ badges }: { badges: Record<string, number> }) {
+  return <TabBar badges={badges} pathname={usePathname()} />;
+}
 
-  if (variant === "header") {
-    return (
-      <nav aria-label="Main" className="hidden gap-1 md:flex">
-        {TABS.map(({ href, label, icon: Icon }) => (
+function SidebarNav({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
+  return (
+    <nav aria-label="Main" className="grid gap-1">
+      {APP_NAV.map(({ href, label, icon: Icon }) => {
+        const active = isActivePath(pathname, href);
+        return (
           <Link
             key={href}
             href={href}
-            aria-current={isActive(href) ? "page" : undefined}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isActive(href) ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              active ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            <Icon className="size-4" aria-hidden />
-            {label}
+            <Icon className={cn("size-5", active && "text-coral")} aria-hidden />
+            <span className="flex-1">{label}</span>
             <CountBadge count={badges[href] ?? 0} />
           </Link>
-        ))}
-      </nav>
+        );
+      })}
+    </nav>
+  );
+}
+
+function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
+  const [home, discover, requests, chat] = APP_NAV;
+  const tab = (item: (typeof APP_NAV)[number]) => {
+    const active = isActivePath(pathname, item.href);
+    const Icon = item.icon;
+    return (
+      <Link
+        href={item.href}
+        aria-current={active ? "page" : undefined}
+        className={cn("flex flex-col items-center gap-0.5 py-2 text-xs font-medium", active ? "text-primary" : "text-muted-foreground")}
+      >
+        <span className="relative">
+          <Icon className={cn("size-5", active && "text-coral")} aria-hidden />
+          <CountBadge count={badges[item.href] ?? 0} floating />
+        </span>
+        {item.label}
+      </Link>
     );
-  }
+  };
 
   return (
     <nav
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-20 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="grid grid-cols-4">
-        {TABS.map(({ href, label, icon: Icon }) => (
-          <li key={href}>
-            <Link
-              href={href}
-              aria-current={isActive(href) ? "page" : undefined}
-              className={cn(
-                "flex flex-col items-center gap-0.5 py-2 text-xs font-medium",
-                isActive(href) ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              <span className="relative">
-                <Icon className={cn("size-5", isActive(href) && "text-coral")} aria-hidden />
-                <CountBadge count={badges[href] ?? 0} floating />
-              </span>
-              {label}
-            </Link>
-          </li>
-        ))}
+      <ul className="grid grid-cols-5 items-end">
+        <li>{tab(home)}</li>
+        <li>{tab(discover)}</li>
+        <li className="flex justify-center">
+          <CreateMenu variant="tab" />
+        </li>
+        <li>{tab(requests)}</li>
+        <li>{tab(chat)}</li>
       </ul>
     </nav>
-  );
-}
-
-function CountBadge({ count, floating }: { count: number; floating?: boolean }) {
-  if (count === 0) return null;
-  return (
-    <span
-      className={cn(
-        "min-w-4 rounded-full bg-coral px-1 text-center text-[10px] leading-4 font-semibold text-white",
-        floating && "absolute -top-1.5 -right-2.5",
-      )}
-    >
-      {count > 9 ? "9+" : count}
-      <span className="sr-only"> new</span>
-    </span>
   );
 }
