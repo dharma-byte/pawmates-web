@@ -11,12 +11,12 @@ export function Hero() {
           Every member is verified by a person
         </span>
         <h1 className="text-4xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
-          Where pets make friends, and so do their{" "}
+          Where dogs make friends, and so do their{" "}
           <span className="bg-linear-to-r from-orange to-coral bg-clip-text text-transparent">humans</span>.
         </h1>
         <p className="max-w-xl text-lg text-pretty text-muted-foreground">
-          Find compatible playmates near you, chat in real time, and plan playdates at the parks your
-          pet already loves. Free, and made only for pets.
+          Find compatible playmates for your dog nearby, chat in real time, and plan walks and playdates
+          at the parks your dog already loves. Free, and made for dogs and their people.
         </p>
 
         {/* Area search leads into sign-up; results are for verified members only. */}
@@ -46,8 +46,8 @@ export function Hero() {
 
       <div className="relative grid grid-cols-2 gap-4" aria-hidden>
         <PetTile name="Bruno" detail="Golden Retriever" tone="peach" photo="/pets/bruno.webp" className="h-60" />
-        <PetTile name="Misty" detail="Persian cat" tone="mint" photo="/pets/misty.webp" className="mt-6 h-44" />
-        <PetTile name="Kiwi" detail="Budgie" tone="sky" photo="/pets/kiwi.webp" className="h-48" />
+        <PetTile name="Pepper" detail="Papillon" tone="mint" photo="/pets/pepper.webp" className="mt-6 h-44" />
+        <PetTile name="Rocky" detail="English Pointer" tone="sky" photo="/pets/rocky.webp" className="h-48" />
         <PetTile name="Luna" detail="Indie · 2 km away" tone="sun" photo="/pets/luna.webp" className="h-60" />
         <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 rounded-2xl border bg-card px-4 py-3 shadow-lg sm:block">
           <p className="text-xs text-muted-foreground">Bruno + Luna</p>

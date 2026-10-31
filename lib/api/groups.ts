@@ -8,7 +8,7 @@ export type Species = Database["public"]["Enums"]["pet_species"];
 export const GROUP_KINDS: { value: GroupKind; label: string; hint: string }[] = [
   { value: "area", label: "Neighbourhood", hint: "Walks and meetups near home" },
   { value: "breed", label: "Breed club", hint: "Owners of one breed" },
-  { value: "interest", label: "Interest", hint: "Training, adoption, cat parents…" },
+  { value: "interest", label: "Interest", hint: "Training, adoption, rescue dogs…" },
 ];
 
 export const groupKeys = {

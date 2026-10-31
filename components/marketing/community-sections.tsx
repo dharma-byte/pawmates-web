@@ -10,14 +10,14 @@ export function Events() {
     <Section
       id="events"
       eyebrow="Events"
-      title="Playdates and pet events near you"
+      title="Dog walks, playdates and meetups near you"
       intro="Group walks, breed meetups, adoption drives and training workshops, all with a real map pin."
     >
       <div className="grid gap-6 md:grid-cols-3">
         {[
           { day: "Weekend walks", text: "Area walking groups meeting at parks you already go to." },
-          { day: "Breed meetups", text: "Beagle clubs, Indie dog groups, cat parents and more." },
-          { day: "Adoption drives", text: "Verified shelters and rescues finding homes for pets." },
+          { day: "Breed meetups", text: "Beagle clubs, Indie dog groups, retriever meetups and more." },
+          { day: "Adoption drives", text: "Verified shelters and rescues finding homes for dogs." },
         ].map((event) => (
           <article key={event.day} className="grid content-start gap-2 rounded-3xl border border-dashed bg-card p-6">
             <CalendarPlus className="size-6 text-coral" aria-hidden />
@@ -57,7 +57,7 @@ export function Organisers() {
 // to be the first.
 export function EarlyMembers() {
   return (
-    <Section eyebrow="Early members" title="Be one of the first pets in your neighbourhood">
+    <Section eyebrow="Early members" title="Be one of the first dogs in your neighbourhood">
       <div className="mx-auto grid w-full max-w-3xl gap-5 rounded-3xl bg-secondary p-8 text-center text-secondary-foreground">
         <Trophy className="mx-auto size-9 text-coral" aria-hidden />
         <p className="text-lg">

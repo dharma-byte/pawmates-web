@@ -23,11 +23,11 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Pawmates: where pets make friends",
+    default: "Pawmates: where dogs make friends",
     template: "%s · Pawmates",
   },
   description:
-    "Find nearby pet friends, chat in real time, join groups and organise playdates and pet events.",
+    "Find playmates for your dog nearby, chat in real time, join walking groups and organise playdates and dog meetups.",
   applicationName: "Pawmates",
 };
 

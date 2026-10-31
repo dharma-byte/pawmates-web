@@ -13,8 +13,8 @@ import {
 import { Section } from "./section";
 
 const STEPS = [
-  { title: "Add your pet", text: "Size, energy and play style, so we can find pets who play the same way." },
-  { title: "Send a Sniff request", text: "Browse verified pets nearby with a match score, and say hello." },
+  { title: "Add your dog", text: "Size, energy and play style, so we can find dogs who play the same way." },
+  { title: "Send a Sniff request", text: "Browse verified dogs nearby with a match score, and say hello." },
   { title: "Chat and meet up", text: "Become Pawmates, pick a park in chat and share the meeting spot." },
 ];
 
@@ -42,11 +42,11 @@ export function Features() {
       id="features"
       tinted
       eyebrow="Features"
-      title="Everything your pet's social life needs"
-      intro="Built only for pets, so every profile, chat and event is about them."
+      title="Everything your dog's social life needs"
+      intro="Built for dogs and their people, so every profile, chat and event is about them."
     >
       <div className="grid gap-6 md:grid-cols-2">
-        <FeatureCard icon={Sparkles} title="Discover with a match score" text="See verified pets within 1 to 25 km, filtered by species, size, energy and temperament.">
+        <FeatureCard icon={Sparkles} title="Discover with a match score" text="See verified dogs within 1 to 25 km, filtered by size, energy and temperament.">
           <div className="flex items-center justify-between rounded-2xl bg-background p-3 shadow-sm">
             <span className="flex items-center gap-3">
               <span className="size-10 rounded-xl bg-orange/30" />
@@ -64,7 +64,7 @@ export function Features() {
           </div>
         </FeatureCard>
 
-        <FeatureCard icon={CalendarHeart} title="Groups and events" text="Breed clubs, area walking groups, playdates and pet events with RSVP." soon>
+        <FeatureCard icon={CalendarHeart} title="Groups and events" text="Breed clubs, area walking groups, playdates and dog events with RSVP.">
           <div className="flex items-center gap-3 rounded-2xl bg-background p-3 text-sm shadow-sm">
             <span className="grid size-12 place-items-center rounded-xl bg-accent font-heading font-bold text-accent-foreground">SAT</span>
             <span><span className="block font-semibold">Beagle morning walk</span><span className="block text-xs text-muted-foreground">City Park · 7:00 AM</span></span>
@@ -80,7 +80,7 @@ export function Features() {
           </div>
         </FeatureCard>
 
-        <FeatureCard icon={Radar} title="Lost and found alerts" text="Report a lost pet and everyone nearby is alerted straight away." soon className="md:col-span-2" />
+        <FeatureCard icon={Radar} title="Lost and found alerts" text="Report a lost dog and everyone nearby is alerted straight away." soon className="md:col-span-2" />
       </div>
     </Section>
   );
@@ -131,7 +131,7 @@ export function MatchExplainer() {
     <Section
       eyebrow="Why this match?"
       title="A match score you can actually understand"
-      intro="Pets who play the same way have better playdates. We show you exactly why two pets fit."
+      intro="Dogs who play the same way have better playdates. We show you exactly why two dogs fit."
     >
       <div className="mx-auto grid w-full max-w-3xl gap-6 rounded-3xl border bg-card p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">

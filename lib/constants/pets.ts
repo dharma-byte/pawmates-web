@@ -4,12 +4,11 @@ type Enums = Database["public"]["Enums"];
 
 export type Option<T extends string> = { value: T; label: string; hint?: string };
 
+// Pawmates is dog-first: dogs are the pets that meet outside. Cats can join
+// too; the database no longer accepts new birds, rabbits or other pets.
 export const SPECIES: Option<Enums["pet_species"]>[] = [
   { value: "dog", label: "🐶 Dog" },
   { value: "cat", label: "🐱 Cat" },
-  { value: "bird", label: "🐦 Bird" },
-  { value: "rabbit", label: "🐰 Rabbit" },
-  { value: "other", label: "🐾 Other" },
 ];
 
 export const GENDERS: Option<Enums["pet_gender"]>[] = [
