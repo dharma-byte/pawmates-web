@@ -275,6 +275,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"notifications": {
+                  Row: {
+                    "actor_id": string | null,"body": string | null,"created_at": string,"dedupe_key": string | null,"id": string,"link": string | null,"read_at": string | null,"title": string,"type": Database["public"]['Enums']["notification_type"],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"read_at"?: string | null,"title": string,"type": Database["public"]['Enums']["notification_type"],"user_id": string
+                  }
+                  Update: {
+                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"read_at"?: string | null,"title"?: string,"type"?: Database["public"]['Enums']["notification_type"],"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notifications_actor_id_fkey"
+      columns: ["actor_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notifications_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"pets": {
                   Row: {
                     "allergies": string | null,"birth_date": string | null,"breed": string | null,"created_at": string,"dislikes": (string)[],"energy": Database["public"]['Enums']["energy_level"] | null,"gender": Database["public"]['Enums']["pet_gender"],"good_with_cats": boolean | null,"good_with_kids": boolean | null,"good_with_small_dogs": boolean | null,"id": string,"likes": (string)[],"name": string,"neutered": boolean | null,"owner_id": string,"photos": (string)[],"play_style": Database["public"]['Enums']["play_style"] | null,"size": Database["public"]['Enums']["pet_size"] | null,"special_needs": string | null,"species": Database["public"]['Enums']["pet_species"],"temperament": Database["public"]['Enums']["pet_temperament"] | null,"updated_at": string,"vaccinated": boolean,"vaccinated_on": string | null,"weight_kg": number | null
@@ -472,6 +498,9 @@ isOneToOne: false
 "mark_conversation_read":
 { Args: { "conv": string }; Returns: undefined
                            },
+"mark_notifications_read":
+{ Args: { "ids"?: (string)[] }; Returns: undefined
+                           },
 "my_blocked_users":
 { Args: Record<PropertyKey, never>; Returns: {
               "avatar_url": string,"blocked_at": string,"full_name": string,"user_id": string,"username": string
@@ -549,7 +578,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","group_kind": "breed"|"area"|"interest","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
+            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","group_kind": "breed"|"area"|"interest","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","notification_type": "sniff_request"|"sniff_accepted"|"playdate_invite"|"event_new"|"event_cancelled"|"waitlist_promoted"|"event_reminder","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -669,7 +698,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"group_kind": ["breed", "area", "interest"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
+            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"group_kind": ["breed", "area", "interest"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"notification_type": ["sniff_request", "sniff_accepted", "playdate_invite", "event_new", "event_cancelled", "waitlist_promoted", "event_reminder"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
           }
         }
 } as const
