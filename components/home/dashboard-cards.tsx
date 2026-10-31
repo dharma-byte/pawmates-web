@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Circle, MessageCircle, PawPrint, ShieldCheck, Star, Users } from "lucide-react";
+import { eventKeys, fetchUpcomingEvents } from "@/lib/api/groups";
 import { fetchPendingReviews, playdateKeys } from "@/lib/api/playdates";
 import { ReviewDialog } from "@/components/playdates/review-dialog";
 import { toast } from "sonner";
@@ -233,12 +234,42 @@ export function SafetyTip() {
   );
 }
 
+// The next few group events in my groups or nearby, with my RSVP.
 export function EventsSoon() {
+  const { data } = useQuery({ queryKey: eventKeys.upcoming(null), queryFn: () => fetchUpcomingEvents(null) });
+  const soon = (data ?? []).filter((e) => e.status === "scheduled").slice(0, 3);
+
   return (
-    <DashboardCard title="Events near you">
-      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Users className="size-4" aria-hidden /> Group walks and playdates are coming soon.
-      </p>
+    <DashboardCard title="Events near you" action={<Link href="/groups" className="text-sm font-medium text-primary">All groups</Link>}>
+      {data && soon.length === 0 ? (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Users className="size-4" aria-hidden /> Nothing planned yet. Join a group and host a walk!
+        </p>
+      ) : (
+        <ul className="grid gap-1">
+          {soon.map((event) => (
+            <li key={event.id}>
+              <Link href={`/groups/${event.group_id}`} className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted">
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-center leading-none text-primary">
+                  <span className="text-[10px] font-semibold uppercase">
+                    {new Date(event.starts_at).toLocaleDateString(undefined, { month: "short" })}
+                  </span>
+                  <span className="font-heading text-base font-bold">{new Date(event.starts_at).getDate()}</span>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium">{event.title}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {new Date(event.starts_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })} · {event.place_name ?? event.address} · {event.going_count} going
+                  </span>
+                </span>
+                {event.my_status === "going" && (
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-primary">Going</span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </DashboardCard>
   );
 }

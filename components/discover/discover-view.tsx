@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Compass, Layers, LayoutGrid, Map as MapIcon, SlidersHorizontal } from "lucide-react";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
@@ -141,6 +142,10 @@ export function DiscoverView() {
             Verified pets near {me?.area_name ?? "you"}
             {me?.pets[0] ? `, with match scores for ${me.pets[0].name}` : ""}.
           </p>
+          {/* Phones have no Groups tab, so Discover points the way. */}
+          <Link href="/groups" className="w-fit text-sm font-medium text-primary underline-offset-4 hover:underline md:hidden">
+            Groups & events near you →
+          </Link>
         </div>
         <div role="radiogroup" aria-label="View" className="flex rounded-full border bg-muted p-1">
           {VIEWS.map(({ value, label, icon: Icon }) => (
