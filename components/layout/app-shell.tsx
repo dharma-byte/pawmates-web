@@ -90,9 +90,11 @@ function SidebarNav({ badges, pathname }: { badges: Record<string, number>; path
 }
 
 function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
-  // No room for five tabs plus ＋: Friends stands in for Requests on phones,
-  // carrying its badge, and links to Requests from the page.
-  const [home, discover, friends, , chat] = APP_NAV;
+  // Phones get four tabs plus ＋. Friends stands in for Requests (carrying
+  // its badge); Groups is reached from Discover, Home and the ＋ menu.
+  const [home, discover, friends, chat] = (["/home", "/discover", "/friends", "/chat"] as const).map(
+    (href) => APP_NAV.find((item) => item.href === href)!,
+  );
   const tab = (item: (typeof APP_NAV)[number]) => {
     const active =
       isActivePath(pathname, item.href) || (item.href === "/friends" && isActivePath(pathname, "/requests"));

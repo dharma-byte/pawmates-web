@@ -1,11 +1,12 @@
-import { Compass, Contact, House, MessageCircle, Users } from "lucide-react";
+import { Compass, Contact, House, MessageCircle, UserPlus, Users } from "lucide-react";
 
 // Main sections of the signed-in app, shared by the sidebar and tab bar.
 export const APP_NAV = [
   { href: "/home", label: "Home", icon: House },
   { href: "/discover", label: "Discover", icon: Compass },
+  { href: "/groups", label: "Groups", icon: Users },
   { href: "/friends", label: "Friends", icon: Contact },
-  { href: "/requests", label: "Requests", icon: Users },
+  { href: "/requests", label: "Requests", icon: UserPlus },
   { href: "/chat", label: "Chat", icon: MessageCircle },
 ] as const;
 

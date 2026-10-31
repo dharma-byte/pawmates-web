@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, MessageCircle, Users } from "lucide-react";
+import { Bell, MessageCircle, UserPlus } from "lucide-react";
 import type { useActivity } from "@/hooks/use-activity";
 import { chatTitle } from "@/lib/api/chat";
 import {
@@ -37,7 +37,7 @@ export function ActivityMenu({ activity }: { activity: ReturnType<typeof useActi
         {total === 0 && <p className="px-3 py-6 text-center text-sm text-muted-foreground">You&apos;re all caught up.</p>}
         {waitingRequests > 0 && (
           <DropdownMenuItem render={<Link href="/requests" />}>
-            <Users aria-hidden />
+            <UserPlus aria-hidden />
             {waitingRequests} Sniff request{waitingRequests === 1 ? "" : "s"} waiting
           </DropdownMenuItem>
         )}

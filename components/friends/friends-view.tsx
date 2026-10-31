@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Ellipsis, MapPin, PawPrint, Search, UserMinus, UserRound, Users } from "lucide-react";
+import { Ellipsis, MapPin, PawPrint, Search, UserMinus, UserPlus, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import {
   connectionKeys,
@@ -49,7 +49,7 @@ export function FriendsView() {
           <p className="text-muted-foreground">Your Pawmates. Message them any time or plan the next playdate.</p>
         </div>
         <Link href="/requests" className={buttonVariants({ variant: "outline" })}>
-          <Users aria-hidden /> Requests
+          <UserPlus aria-hidden /> Requests
           {waitingRequests > 0 && <Badge className="ml-1">{waitingRequests}</Badge>}
         </Link>
       </div>
