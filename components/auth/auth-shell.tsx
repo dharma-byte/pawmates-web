@@ -1,3 +1,4 @@
+import { Backdrop } from "@/components/layout/backdrop";
 import { Logo } from "@/components/shared/logo";
 import {
   Card,
@@ -21,8 +22,10 @@ export function AuthShell({
 }) {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-10">
+      {/* The homepage's pet photo, so signing in feels like the same site. */}
+      <Backdrop name="homepage" />
       <Logo className="text-lg" />
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm bg-card/85 shadow-2xl backdrop-blur-xl">
         <CardHeader>
           <CardTitle className="text-xl">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
