@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { Message } from "@/lib/api/chat";
+import type { Notification } from "@/lib/api/notifications";
 
 const TYPING_SHOWN_MS = 3000;
 const TYPING_SEND_EVERY_MS = 2000;
@@ -113,10 +114,13 @@ export function useChatChannel({
 
 // App-wide: refresh the inbox and unread badge whenever any of my
 // conversations gets a message (RLS limits events to my conversations).
-export function useInboxRealtime(onChange: () => void) {
+// New notifications arrive on the same channel.
+export function useInboxRealtime(onChange: () => void, onNotification?: (notification: Notification) => void) {
   const handler = useRef(onChange);
+  const notify = useRef(onNotification);
   useEffect(() => {
     handler.current = onChange;
+    notify.current = onNotification;
   });
 
   useEffect(() => {
@@ -126,6 +130,10 @@ export function useInboxRealtime(onChange: () => void) {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, () => handler.current())
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "conversation_members" }, () =>
         handler.current(),
+      )
+      // RLS limits this to my own notifications.
+      .on<Notification>("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, (payload) =>
+        notify.current?.(payload.new),
       );
     supabase.realtime.setAuth().then(() => channel.subscribe());
     return () => {
