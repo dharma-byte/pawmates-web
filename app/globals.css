@@ -155,3 +155,37 @@
     @apply font-heading;
   }
 }
+
+/* Page backdrops (components/layout/backdrop.tsx): a blurred pet photo,
+   wide on computers and tall on phones, fading in when the section changes. */
+.backdrop-photo {
+  background-image: var(--backdrop-wide);
+  background-size: cover;
+  background-position: center;
+  animation: backdrop-in 600ms ease-out;
+}
+@media (orientation: portrait) {
+  .backdrop-photo {
+    background-image: var(--backdrop-tall);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-photo {
+    animation: none;
+  }
+}
+/* The veil softens the photo toward the page colour so text stays readable:
+   lighter at the top where the pets show most, stronger lower down. */
+.backdrop-veil {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--background) 42%, transparent),
+    color-mix(in srgb, var(--background) 62%, transparent) 45%,
+    color-mix(in srgb, var(--background) 74%, transparent)
+  );
+}
