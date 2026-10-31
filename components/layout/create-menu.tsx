@@ -14,7 +14,7 @@ import { CreateGroupDialog } from "@/components/groups/create-group-dialog";
 
 // The ＋ action: things members create. Upcoming actions are listed but
 // disabled so people see what's coming.
-export function CreateMenu({ variant }: { variant: "sidebar" | "tab" }) {
+export function CreateMenu({ variant }: { variant: "bar" | "tab" }) {
   const [creatingGroup, setCreatingGroup] = useState(false);
   return (
     <>
@@ -25,13 +25,13 @@ export function CreateMenu({ variant }: { variant: "sidebar" | "tab" }) {
             "flex items-center justify-center gap-2 font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
             variant === "tab"
               ? "-mt-6 size-14 rounded-full bg-primary text-primary-foreground shadow-lg"
-              : "h-11 w-full rounded-xl bg-primary text-sm text-primary-foreground hover:bg-primary/90",
+              : "h-9 rounded-full bg-primary px-3 text-sm text-primary-foreground hover:bg-primary/90 lg:px-4",
           )}
         >
           <Plus className={variant === "tab" ? "size-6" : "size-4"} aria-hidden />
-          {variant === "sidebar" && "Create"}
+          {variant === "bar" && <span className="sr-only lg:not-sr-only">Create</span>}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={variant === "tab" ? "center" : "start"} className="w-60">
+        <DropdownMenuContent align={variant === "tab" ? "center" : "end"} className="w-60">
           <DropdownMenuItem render={<Link href="/settings?tab=pets" />}>
             <PawPrint aria-hidden /> Add a pet
           </DropdownMenuItem>

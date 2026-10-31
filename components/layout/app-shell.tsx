@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Settings } from "lucide-react";
 import { cn } from "cn";
 import { useActivity } from "@/hooks/use-activity";
 import { Logo } from "@/components/shared/logo";
@@ -15,41 +14,36 @@ import { CreateMenu } from "./create-menu";
 import { APP_NAV, isActivePath } from "./nav-config";
 
 // The signed-in app: deliberately different from the marketing site.
-//   desktop  left sidebar + slim top bar (activity, account)
+//   desktop  one sticky frosted top bar: logo, sections, ＋ Create, bell, account
 //   phone    top bar + bottom tab bar with a centre ＋
+// Requests live under Friends (its badge and a button on the Friends page);
+// Settings is in the account menu.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const activity = useActivity();
 
   return (
-    <div className="flex min-h-full flex-1">
+    <div className="flex min-h-full flex-1 flex-col">
       <Suspense fallback={<Backdrop name="home" />}>
         <ActiveBackdrop />
       </Suspense>
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 border-r bg-sidebar/80 px-4 py-5 backdrop-blur-xl md:flex">
-        <Logo href="/home" className="px-2" />
-        <CreateMenu variant="sidebar" />
-        <Suspense fallback={<SidebarNav badges={activity.badges} pathname={null} />}>
-          <ActiveSidebarNav badges={activity.badges} />
-        </Suspense>
-        <Link
-          href="/settings"
-          className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <Settings className="size-5" aria-hidden /> Settings
-        </Link>
-      </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b bg-background/70 px-4 backdrop-blur-xl md:justify-end">
-          <Logo href="/home" className="md:hidden" />
-          <div className="flex items-center gap-1">
+      <header className="sticky top-0 z-20 border-b bg-background/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4">
+          <Logo href="/home" className="shrink-0" />
+          <Suspense fallback={<TopNav badges={activity.badges} pathname={null} />}>
+            <ActiveTopNav badges={activity.badges} />
+          </Suspense>
+          <div className="flex shrink-0 items-center gap-1">
+            <span className="mr-1 hidden md:block">
+              <CreateMenu variant="bar" />
+            </span>
             <ActivityMenu activity={activity} />
             <AccountMenu />
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:px-8 md:pb-10">{children}</main>
-      </div>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:px-8 md:pb-10">{children}</main>
 
       <Suspense fallback={<TabBar badges={activity.badges} pathname={null} />}>
         <ActiveTabBar badges={activity.badges} />
@@ -58,38 +52,58 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+// The sections shown in the top bar and the phone tab bar. Friends stands in
+// for Requests: it is active on /requests and carries the requests badge.
+const MAIN_SECTIONS = (["/home", "/discover", "/groups", "/friends", "/chat"] as const).map(
+  (href) => APP_NAV.find((item) => item.href === href)!,
+);
+
+function sectionState(item: (typeof APP_NAV)[number], pathname: string | null, badges: Record<string, number>) {
+  const friends = item.href === "/friends";
+  return {
+    active: isActivePath(pathname, item.href) || (friends && isActivePath(pathname, "/requests")),
+    badge: (friends ? badges["/requests"] : badges[item.href]) ?? 0,
+  };
+}
+
 // The current path is request-time data on dynamic routes like /chat/[id],
 // so only these small wrappers read it, inside Suspense boundaries.
 function ActiveBackdrop() {
   return <Backdrop name={backdropForPath(usePathname())} />;
 }
 
-function ActiveSidebarNav({ badges }: { badges: Record<string, number> }) {
-  return <SidebarNav badges={badges} pathname={usePathname()} />;
+function ActiveTopNav({ badges }: { badges: Record<string, number> }) {
+  return <TopNav badges={badges} pathname={usePathname()} />;
 }
 
 function ActiveTabBar({ badges }: { badges: Record<string, number> }) {
   return <TabBar badges={badges} pathname={usePathname()} />;
 }
 
-function SidebarNav({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
+// Icons only on small laptops, icons and labels from lg up.
+function TopNav({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
   return (
-    <nav aria-label="Main" className="grid gap-1">
-      {APP_NAV.map(({ href, label, icon: Icon }) => {
-        const active = isActivePath(pathname, href);
+    <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+      {MAIN_SECTIONS.map((item) => {
+        const { active, badge } = sectionState(item, pathname, badges);
+        const Icon = item.icon;
         return (
           <Link
-            key={href}
-            href={href}
+            key={item.href}
+            href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-              active ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              "relative flex h-9 items-center gap-2 rounded-full px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 lg:px-4",
+              active ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
             )}
           >
-            <Icon className={cn("size-5", active && "text-coral")} aria-hidden />
-            <span className="flex-1">{label}</span>
-            <CountBadge count={badges[href] ?? 0} />
+            <span className="relative">
+              <Icon className={cn("size-5 lg:size-4", active && "text-coral")} aria-hidden />
+              <CountBadge count={badge} floating className="lg:hidden" />
+            </span>
+            <span className="sr-only lg:not-sr-only">{item.label}</span>
+            {/* With labels showing, the count sits after the label instead. */}
+            <CountBadge count={badge} className="hidden lg:block" />
           </Link>
         );
       })}
@@ -98,15 +112,9 @@ function SidebarNav({ badges, pathname }: { badges: Record<string, number>; path
 }
 
 function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
-  // Phones get four tabs plus ＋. Friends stands in for Requests (carrying
-  // its badge); Groups is reached from Discover, Home and the ＋ menu.
-  const [home, discover, friends, chat] = (["/home", "/discover", "/friends", "/chat"] as const).map(
-    (href) => APP_NAV.find((item) => item.href === href)!,
-  );
+  const [home, discover, , friends, chat] = MAIN_SECTIONS;
   const tab = (item: (typeof APP_NAV)[number]) => {
-    const active =
-      isActivePath(pathname, item.href) || (item.href === "/friends" && isActivePath(pathname, "/requests"));
-    const badge = item.href === "/friends" ? badges["/requests"] : badges[item.href];
+    const { active, badge } = sectionState(item, pathname, badges);
     const Icon = item.icon;
     return (
       <Link
@@ -116,7 +124,7 @@ function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname
       >
         <span className="relative">
           <Icon className={cn("size-5", active && "text-coral")} aria-hidden />
-          <CountBadge count={badge ?? 0} floating />
+          <CountBadge count={badge} floating />
         </span>
         {item.label}
       </Link>
