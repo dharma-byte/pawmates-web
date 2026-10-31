@@ -29,6 +29,10 @@ import {
 } from "@/lib/api/chat";
 import { connectionKeys } from "@/lib/api/connections";
 import { reverseGeocode } from "@/lib/api/geocode";
+import { fetchMe, meKey } from "@/lib/api/me";
+import { playdateKeys } from "@/lib/api/playdates";
+import { PlanPlaydateDialog } from "@/components/playdates/plan-playdate-dialog";
+import { PlaydateCard } from "@/components/playdates/playdate-card";
 import { formatDayDivider, sameDay } from "@/lib/utils/dates";
 import { useChatChannel } from "@/hooks/use-chat-channel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -70,6 +74,8 @@ export function ChatRoom() {
   const scroller = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
   const [reporting, setReporting] = useState<{ type: "message" | "profile"; id: string } | null>(null);
+  const [planning, setPlanning] = useState(false);
+  const { data: me } = useQuery({ queryKey: meKey, queryFn: fetchMe });
 
   const conversation = useQuery({
     queryKey: chatKeys.conversation(conversationId),
@@ -105,6 +111,8 @@ export function ChatRoom() {
     onMessage: (message) => {
       addMessage(message);
       if (message.sender_id !== meId && document.visibilityState === "visible") readNow();
+      // Accept, decline and cancel post a follow-up: refresh that playdate's card.
+      if (message.type === "invite") queryClient.invalidateQueries({ queryKey: playdateKeys.all });
     },
     onReadReceipt: (userId, lastReadAt) => {
       queryClient.setQueryData<Conversation>(chatKeys.conversation(conversationId), (data) =>
@@ -126,6 +134,18 @@ export function ChatRoom() {
 
   // Oldest first for display.
   const ordered = (messages.data?.pages.flat() ?? []).slice().reverse();
+
+  // The first message about each playdate carries its card; later ones
+  // (accepted, cancelled) render as short notes.
+  const cardMessageIds = new Set<string>();
+  const seenEvents = new Set<string>();
+  for (const message of ordered) {
+    const eventId = (message.metadata as { event_id?: string } | null)?.event_id;
+    if (message.type === "invite" && eventId && !seenEvents.has(eventId)) {
+      seenEvents.add(eventId);
+      cardMessageIds.add(message.id);
+    }
+  }
 
   // Follow new messages when the member is already at the bottom.
   useLayoutEffect(() => {
@@ -274,6 +294,14 @@ export function ChatRoom() {
                 message={message}
                 mine={message.sender_id === meId}
                 seen={!!other && other.last_read_at >= message.created_at}
+                inviteCard={
+                  cardMessageIds.has(message.id) ? (
+                    <PlaydateCard
+                      eventId={(message.metadata as { event_id: string }).event_id}
+                      otherName={name.split(" ")[0]}
+                    />
+                  ) : undefined
+                }
                 onDelete={() => deleteMessage(message.id).catch((error) => toast.error(error.message))}
                 onReport={() => setReporting({ type: "message", id: message.id })}
               />
@@ -290,6 +318,7 @@ export function ChatRoom() {
 
       <MessageInput
         disabled={!other}
+        onPlan={me?.pets.length ? () => setPlanning(true) : undefined}
         onTyping={notifyTyping}
         onSendText={(body) => send(() => sendText(conversationId, body))}
         onSendImage={(file) => send(() => sendImage(conversationId, file))}
@@ -300,6 +329,16 @@ export function ChatRoom() {
       />
 
       <ReportDialog target={reporting} onClose={() => setReporting(null)} />
+
+      {/* Mounted only while open: the planner reads the clock and runs place searches. */}
+      {planning && me && (
+        <PlanPlaydateDialog
+          conversationId={conversationId}
+          otherName={name.split(" ")[0]}
+          myPets={me.pets}
+          onClose={() => setPlanning(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,19 +1,21 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Camera, MapPin, SendHorizontal } from "lucide-react";
+import { CalendarPlus, Camera, MapPin, SendHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 export function MessageInput({
   disabled,
+  onPlan,
   onSendText,
   onSendImage,
   onSendLocation,
   onTyping,
 }: {
   disabled: boolean;
+  onPlan?: () => void;
   onSendText: (body: string) => Promise<unknown>;
   onSendImage: (file: File) => Promise<unknown>;
   onSendLocation: (lat: number, lng: number) => Promise<unknown>;
@@ -93,6 +95,18 @@ export function MessageInput({
       >
         <MapPin />
       </Button>
+      {onPlan && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-lg"
+          aria-label="Plan a playdate"
+          disabled={disabled || busy}
+          onClick={onPlan}
+        >
+          <CalendarPlus />
+        </Button>
+      )}
       <label htmlFor="message-body" className="sr-only">
         Message
       </label>

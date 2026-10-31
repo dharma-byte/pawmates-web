@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { Check, CheckCheck, EllipsisVertical, Flag, MapPin, Trash2 } from "lucide-react";
+import { CalendarDays, Check, CheckCheck, EllipsisVertical, Flag, MapPin, Trash2 } from "lucide-react";
 import { cn } from "cn";
 import { chatKeys, locationOf, signedImageUrl, type Message } from "@/lib/api/chat";
 import { formatMessageTime } from "@/lib/utils/dates";
@@ -18,16 +18,32 @@ export function MessageBubble({
   message,
   mine,
   seen,
+  inviteCard,
   onDelete,
   onReport,
 }: {
   message: Message;
   mine: boolean;
   seen: boolean;
+  // The playdate card, for the first message about each playdate.
+  inviteCard?: React.ReactNode;
   onDelete: () => void;
   onReport: () => void;
 }) {
   const deleted = !!message.deleted_at;
+
+  if (message.type === "invite" && !deleted) {
+    return (
+      <div className={cn("flex", mine ? "justify-end" : "justify-start")}>
+        {inviteCard ?? (
+          <p className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground">
+            <CalendarDays className="size-3.5 text-coral" aria-hidden />
+            {message.body} · {formatMessageTime(message.created_at)}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("group flex items-end gap-1", mine ? "flex-row-reverse" : "flex-row")}>

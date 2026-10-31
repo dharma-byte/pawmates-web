@@ -139,6 +139,58 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"event_attendees": {
+                  Row: {
+                    "created_at": string,"event_id": string,"pet_ids": (string)[],"responded_at": string | null,"status": Database["public"]['Enums']["rsvp_status"],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"event_id": string,"pet_ids"?: (string)[],"responded_at"?: string | null,"status": Database["public"]['Enums']["rsvp_status"],"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"event_id"?: string,"pet_ids"?: (string)[],"responded_at"?: string | null,"status"?: Database["public"]['Enums']["rsvp_status"],"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "event_attendees_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "event_attendees_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"events": {
+                  Row: {
+                    "address": string,"capacity": number | null,"conversation_id": string | null,"created_at": string,"description": string | null,"ends_at": string,"group_id": string | null,"host_id": string,"id": string,"location": unknown,"place_name": string | null,"starts_at": string,"status": Database["public"]['Enums']["event_status"],"title": string,"type": Database["public"]['Enums']["event_type"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "address": string,"capacity"?: number | null,"conversation_id"?: string | null,"created_at"?: string,"description"?: string | null,"ends_at": string,"group_id"?: string | null,"host_id": string,"id"?: string,"location": unknown,"place_name"?: string | null,"starts_at": string,"status"?: Database["public"]['Enums']["event_status"],"title": string,"type": Database["public"]['Enums']["event_type"],"updated_at"?: string
+                  }
+                  Update: {
+                    "address"?: string,"capacity"?: number | null,"conversation_id"?: string | null,"created_at"?: string,"description"?: string | null,"ends_at"?: string,"group_id"?: string | null,"host_id"?: string,"id"?: string,"location"?: unknown,"place_name"?: string | null,"starts_at"?: string,"status"?: Database["public"]['Enums']["event_status"],"title"?: string,"type"?: Database["public"]['Enums']["event_type"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "events_conversation_id_fkey"
+      columns: ["conversation_id"]
+isOneToOne: false
+      referencedRelation: "conversations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "events_host_id_fkey"
+      columns: ["host_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"messages": {
                   Row: {
                     "attachment_url": string | null,"body": string | null,"conversation_id": string,"created_at": string,"deleted_at": string | null,"edited_at": string | null,"id": string,"location": unknown,"metadata": NonNullable<Json>,"sender_id": string,"type": Database["public"]['Enums']["message_type"]
@@ -180,6 +232,38 @@ isOneToOne: false
                     {
       foreignKeyName: "pets_owner_id_fkey"
       columns: ["owner_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"playdate_reviews": {
+                  Row: {
+                    "comment": string | null,"created_at": string,"event_id": string,"id": string,"pet_id": string,"rating": number,"reviewer_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "comment"?: string | null,"created_at"?: string,"event_id": string,"id"?: string,"pet_id": string,"rating": number,"reviewer_id": string
+                  }
+                  Update: {
+                    "comment"?: string | null,"created_at"?: string,"event_id"?: string,"id"?: string,"pet_id"?: string,"rating"?: number,"reviewer_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "playdate_reviews_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "playdate_reviews_pet_id_fkey"
+      columns: ["pet_id"]
+isOneToOne: false
+      referencedRelation: "pets"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "playdate_reviews_reviewer_id_fkey"
+      columns: ["reviewer_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -268,14 +352,25 @@ isOneToOne: false
 "ban_user":
 { Args: { "reason": string,"target": string }; Returns: undefined
                            },
+"cancel_playdate":
+{ Args: { "event": string }; Returns: undefined
+                           },
 "compatibility_breakdown":
 { Args: { "pet_a": string,"pet_b": string }; Returns: Json
                            },
 "compatibility_score":
 { Args: { "pet_a": string,"pet_b": string }; Returns: number
                            },
+"create_playdate":
+{ Args: { "address": string,"conv": string,"duration_minutes": number,"lat": number,"lng": number,"my_pet_ids"?: (string)[],"note"?: string,"place_name": string,"starts_at": string }; Returns: string
+                           },
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"event_location":
+{ Args: { "event": string }; Returns: {
+              "lat": number,"lng": number
+            }[]
                            },
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
@@ -301,13 +396,31 @@ isOneToOne: false
               "avatar_url": string,"blocked_at": string,"full_name": string,"user_id": string,"username": string
             }[]
                            },
+"my_pending_reviews":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "ended_at": string,"event_id": string,"pet_id": string,"pet_name": string,"pet_photo": string,"title": string
+            }[]
+                           },
 "nearby_pets":
 { Args: { "energies"?: (Database["public"]['Enums']["energy_level"])[],"lat"?: number,"lng"?: number,"max_age_months"?: number,"min_age_months"?: number,"my_pet_id"?: string,"page_offset"?: number,"page_size"?: number,"radius_km"?: number,"sizes"?: (Database["public"]['Enums']["pet_size"])[],"species_filter"?: (Database["public"]['Enums']["pet_species"])[],"temperaments"?: (Database["public"]['Enums']["pet_temperament"])[],"vaccinated_only"?: boolean }; Returns: {
               "age_months": number,"approx_distance_km": number,"approx_lat": number,"approx_lng": number,"area_name": string,"breed": string,"compatibility": number,"energy": Database["public"]['Enums']["energy_level"],"gender": Database["public"]['Enums']["pet_gender"],"likes": (string)[],"name": string,"owner_avatar_url": string,"owner_id": string,"owner_username": string,"pet_id": string,"photo": string,"play_style": Database["public"]['Enums']["play_style"],"size": Database["public"]['Enums']["pet_size"],"species": Database["public"]['Enums']["pet_species"],"temperament": Database["public"]['Enums']["pet_temperament"],"vaccinated": boolean
             }[]
                            },
+"pet_playmate_stats":
+{ Args: { "pet": string }; Returns: {
+              "average_rating": number,"good_playmate": boolean,"reviews": number
+            }[]
+                           },
+"playdate_midpoint":
+{ Args: { "conv": string }; Returns: {
+              "lat": number,"lng": number
+            }[]
+                           },
 "resolve_report":
 { Args: { "decision": Database["public"]['Enums']["report_status"],"notes"?: string,"report_id": string }; Returns: undefined
+                           },
+"respond_to_playdate":
+{ Args: { "accept": boolean,"event": string,"my_pet_ids"?: (string)[] }; Returns: undefined
                            },
 "respond_to_sniff":
 { Args: { "accept": boolean,"connection_id": string }; Returns: {
@@ -327,6 +440,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"review_playdate":
+{ Args: { "comment"?: string,"event": string,"pet": string,"rating": number }; Returns: undefined
+                           },
 "review_verification":
 { Args: { "decision": Database["public"]['Enums']["verification_request_status"],"request_id": string,"review_notes"?: string }; Returns: undefined
                            },
@@ -335,7 +451,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
+            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -455,7 +571,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
+            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
           }
         }
 } as const
