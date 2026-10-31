@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import dynamic from "next/dynamic";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Compass, SlidersHorizontal } from "lucide-react";
+import { Compass, Layers, LayoutGrid, Map as MapIcon, SlidersHorizontal } from "lucide-react";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
-import { fetchNearbyPets, type NearbyPet } from "@/lib/api/discover";
+import { fetchMyLocation, fetchNearbyPets, type NearbyPet } from "@/lib/api/discover";
 import { fetchMe, meKey } from "@/lib/api/me";
 import { ENERGY_LEVELS, SIZES, SPECIES, TEMPERAMENTS, type Option } from "@/lib/constants/pets";
 import type { Database } from "@/types/database";
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SniffDialog } from "./sniff-dialog";
+import { SwipeDeck } from "./swipe-deck";
 
 type Enums = Database["public"]["Enums"];
 const PAGE_SIZE = 30;
@@ -47,7 +49,49 @@ const DEFAULT_FILTERS: Filters = {
 
 const orNull = <T,>(values: T[]) => (values.length ? values : undefined);
 
+const DiscoverMap = dynamic(() => import("@/components/map/discover-map"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[60dvh] w-full rounded-2xl" />,
+});
+
+type View = "grid" | "swipe" | "map";
+const VIEWS: { value: View; label: string; icon: typeof LayoutGrid }[] = [
+  { value: "grid", label: "Grid", icon: LayoutGrid },
+  { value: "swipe", label: "Swipe", icon: Layers },
+  { value: "map", label: "Map", icon: MapIcon },
+];
+
+// The chosen view is remembered per device. useSyncExternalStore reads it in
+// the browser only, so prerendering always sees "grid".
+const VIEW_KEY = "pawmates:discover-view";
+const VIEW_EVENT = "pawmates:discover-view";
+function readView(): View {
+  try {
+    const saved = window.localStorage.getItem(VIEW_KEY);
+    return saved === "swipe" || saved === "map" ? saved : "grid";
+  } catch {
+    return "grid";
+  }
+}
+function subscribeView(callback: () => void) {
+  window.addEventListener(VIEW_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(VIEW_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
 export function DiscoverView() {
+  const view = useSyncExternalStore(subscribeView, readView, () => "grid" as View);
+  const chooseView = (next: View) => {
+    try {
+      window.localStorage.setItem(VIEW_KEY, next);
+    } catch {
+      // Private mode or blocked storage: the view still switches below.
+    }
+    window.dispatchEvent(new Event(VIEW_EVENT));
+  };
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
   const [sniffing, setSniffing] = useState<NearbyPet | null>(null);
@@ -77,6 +121,12 @@ export function DiscoverView() {
     enabled: !!me,
   });
 
+  const { data: myLocation } = useQuery({
+    queryKey: ["me", "location"],
+    queryFn: fetchMyLocation,
+    enabled: view === "map",
+  });
+
   const pets = results.data?.pages.flat() ?? [];
   const activeFilters =
     filters.species.length + filters.sizes.length + filters.energies.length +
@@ -84,12 +134,30 @@ export function DiscoverView() {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-1">
-        <h1 className="text-2xl font-bold">Discover</h1>
-        <p className="text-muted-foreground">
-          Verified pets near {me?.area_name ?? "you"}
-          {me?.pets[0] ? `, with match scores for ${me.pets[0].name}` : ""}.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="grid gap-1">
+          <h1 className="text-2xl font-bold">Discover</h1>
+          <p className="text-muted-foreground">
+            Verified pets near {me?.area_name ?? "you"}
+            {me?.pets[0] ? `, with match scores for ${me.pets[0].name}` : ""}.
+          </p>
+        </div>
+        <div role="radiogroup" aria-label="View" className="flex rounded-full border bg-muted p-1">
+          {VIEWS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={view === value}
+              onClick={() => chooseView(value)}
+              className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                view === value ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="size-4" aria-hidden /> {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid gap-4 rounded-xl border p-4">
@@ -148,7 +216,30 @@ export function DiscoverView() {
         </div>
       )}
 
-      {pets.length > 0 && (
+      {pets.length > 0 && view === "swipe" && (
+        <SwipeDeck
+          pets={pets}
+          connectionOf={(ownerId) => connections?.get(ownerId) ?? "none"}
+          canSniff={!!me?.pets.length}
+          onSniff={setSniffing}
+          onExhausted={() => results.hasNextPage && results.fetchNextPage()}
+        />
+      )}
+
+      {pets.length > 0 && view === "map" && (
+        <div className="grid gap-2">
+          {myLocation ? (
+            <DiscoverMap pets={pets} center={myLocation} radiusKm={Number(filters.radius)} />
+          ) : (
+            <Skeleton className="h-[60dvh] w-full rounded-2xl" />
+          )}
+          <p className="text-xs text-muted-foreground">
+            Pins show each owner&apos;s approximate area, never their home. Tap a pin to see their pets.
+          </p>
+        </div>
+      )}
+
+      {pets.length > 0 && view === "grid" && (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => (
             <li key={pet.pet_id}>
@@ -168,7 +259,7 @@ export function DiscoverView() {
         </ul>
       )}
 
-      {results.hasNextPage && (
+      {results.hasNextPage && view !== "swipe" && (
         <Button
           variant="outline"
           className="justify-self-center"
