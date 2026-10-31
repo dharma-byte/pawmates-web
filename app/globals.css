@@ -145,6 +145,12 @@
   html {
     @apply font-sans;
   }
+  /* Navbar links glide to homepage sections, unless reduced motion is on. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
   h1, h2, h3 {
     @apply font-heading;
   }

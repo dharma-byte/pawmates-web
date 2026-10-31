@@ -77,7 +77,8 @@ export async function updateSession(request: NextRequest) {
 
   const verified = profile?.verification_status === "verified";
 
-  if (pathname === "/login" || pathname === "/signup") {
+  // Signed-in members get the app, not the marketing homepage or auth forms.
+  if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
     return redirectTo(verified ? "/home" : "/onboarding");
   }
 
