@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { chatKeys, fetchInbox } from "@/lib/api/chat";
 import { connectionKeys, fetchMyConnections } from "@/lib/api/connections";
 import { eventKeys, groupKeys } from "@/lib/api/groups";
+import { lostKeys } from "@/lib/api/lost";
 import { fetchNotifications, notificationKeys, type Notification } from "@/lib/api/notifications";
 import { playdateKeys } from "@/lib/api/playdates";
 import { useInboxRealtime } from "@/hooks/use-chat-channel";
@@ -19,6 +20,9 @@ const STALE_BY_TYPE: Record<Notification["type"], readonly (readonly string[])[]
   event_cancelled: [eventKeys.all, playdateKeys.all],
   waitlist_promoted: [eventKeys.all, groupKeys.all],
   event_reminder: [],
+  lost_nearby: [lostKeys.all],
+  lost_sighting: [lostKeys.all],
+  lost_found: [lostKeys.all],
 };
 
 // What needs the member's attention: notifications, unread chats (both live

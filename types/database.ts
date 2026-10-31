@@ -249,6 +249,58 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"lost_reports": {
+                  Row: {
+                    "alert_radius_km": number,"created_at": string,"description": string | null,"found_at": string | null,"id": string,"last_seen_at": string,"last_seen_location": unknown,"last_seen_place": string,"owner_id": string,"pet_id": string,"status": Database["public"]['Enums']["lost_status"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "alert_radius_km"?: number,"created_at"?: string,"description"?: string | null,"found_at"?: string | null,"id"?: string,"last_seen_at": string,"last_seen_location": unknown,"last_seen_place": string,"owner_id"?: string,"pet_id": string,"status"?: Database["public"]['Enums']["lost_status"],"updated_at"?: string
+                  }
+                  Update: {
+                    "alert_radius_km"?: number,"created_at"?: string,"description"?: string | null,"found_at"?: string | null,"id"?: string,"last_seen_at"?: string,"last_seen_location"?: unknown,"last_seen_place"?: string,"owner_id"?: string,"pet_id"?: string,"status"?: Database["public"]['Enums']["lost_status"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lost_reports_owner_id_fkey"
+      columns: ["owner_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lost_reports_pet_id_fkey"
+      columns: ["pet_id"]
+isOneToOne: false
+      referencedRelation: "pets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"lost_sightings": {
+                  Row: {
+                    "created_at": string,"id": string,"location": unknown,"note": string | null,"place": string | null,"report_id": string,"reporter_id": string,"seen_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"location": unknown,"note"?: string | null,"place"?: string | null,"report_id": string,"reporter_id"?: string,"seen_at": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"location"?: unknown,"note"?: string | null,"place"?: string | null,"report_id"?: string,"reporter_id"?: string,"seen_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lost_sightings_report_id_fkey"
+      columns: ["report_id"]
+isOneToOne: false
+      referencedRelation: "lost_reports"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lost_sightings_reporter_id_fkey"
+      columns: ["reporter_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"messages": {
                   Row: {
                     "attachment_url": string | null,"body": string | null,"conversation_id": string,"created_at": string,"deleted_at": string | null,"edited_at": string | null,"id": string,"location": unknown,"metadata": NonNullable<Json>,"sender_id": string,"type": Database["public"]['Enums']["message_type"]
@@ -425,7 +477,10 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "admin_stats":
+            "add_lost_sighting":
+{ Args: { "lat": number,"lng": number,"note"?: string,"place"?: string,"report": string,"seen_at": string }; Returns: string
+                           },
+"admin_stats":
 { Args: Record<PropertyKey, never>; Returns: {
               "messages_last_7_days": number,"open_reports": number,"pending_verifications": number,"pets": number,"total_users": number,"verified_users": number
             }[]
@@ -441,6 +496,9 @@ isOneToOne: false
                            },
 "cancel_playdate":
 { Args: { "event": string }; Returns: undefined
+                           },
+"close_lost_report":
+{ Args: { "found_home"?: boolean,"report": string }; Returns: undefined
                            },
 "compatibility_breakdown":
 { Args: { "pet_a": string,"pet_b": string }; Returns: Json
@@ -495,6 +553,16 @@ isOneToOne: false
 "leave_group":
 { Args: { "g": string }; Returns: undefined
                            },
+"lost_pets_nearby":
+{ Args: { "radius_km"?: number }; Returns: {
+              "breed": string,"created_at": string,"description": string,"distance_km": number,"found_at": string,"id": string,"last_seen_at": string,"last_seen_place": string,"mine": boolean,"owner_id": string,"owner_name": string,"pet_id": string,"pet_name": string,"photo": string,"sightings": number,"species": Database["public"]['Enums']["pet_species"],"status": Database["public"]['Enums']["lost_status"]
+            }[]
+                           },
+"lost_report_points":
+{ Args: { "report": string }; Returns: {
+              "kind": string,"lat": number,"lng": number,"seen_at": string,"sighting_id": string
+            }[]
+                           },
 "mark_conversation_read":
 { Args: { "conv": string }; Returns: undefined
                            },
@@ -528,6 +596,9 @@ isOneToOne: false
                            },
 "remove_group_member":
 { Args: { "g": string,"member": string }; Returns: undefined
+                           },
+"report_lost_pet":
+{ Args: { "alert_radius_km"?: number,"description"?: string,"last_seen_at": string,"last_seen_place": string,"lat": number,"lng": number,"pet": string }; Returns: string
                            },
 "resolve_report":
 { Args: { "decision": Database["public"]['Enums']["report_status"],"notes"?: string,"report_id": string }; Returns: undefined
@@ -578,7 +649,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","group_kind": "breed"|"area"|"interest","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","notification_type": "sniff_request"|"sniff_accepted"|"playdate_invite"|"event_new"|"event_cancelled"|"waitlist_promoted"|"event_reminder","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
+            "connection_status": "pending"|"accepted"|"declined","conversation_type": "direct"|"group"|"event","energy_level": "low"|"medium"|"high","event_status": "scheduled"|"cancelled","event_type": "playdate"|"event","group_kind": "breed"|"area"|"interest","lost_status": "lost"|"found"|"closed","message_privacy": "everyone"|"connections","message_type": "text"|"image"|"location"|"invite","notification_type": "sniff_request"|"sniff_accepted"|"playdate_invite"|"event_new"|"event_cancelled"|"waitlist_promoted"|"event_reminder"|"lost_nearby"|"lost_sighting"|"lost_found","pet_gender": "male"|"female"|"unknown","pet_size": "small"|"medium"|"large"|"giant","pet_species": "dog"|"cat"|"bird"|"rabbit"|"other","pet_temperament": "friendly"|"shy"|"reactive","play_style": "chaser"|"wrestler"|"gentle","report_reason": "spam"|"harassment"|"inappropriate"|"fake_profile"|"animal_welfare"|"scam"|"unsafe_meetup"|"other","report_status": "open"|"resolved"|"dismissed","report_target": "profile"|"pet"|"message"|"group"|"event"|"post"|"comment","rsvp_status": "invited"|"going"|"maybe"|"not_going"|"waitlist","verification_method": "email"|"photo"|"phone"|"id","verification_request_status": "pending"|"approved"|"rejected"|"needs_info","verification_status": "unverified"|"pending"|"verified"|"rejected"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -698,7 +769,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"group_kind": ["breed", "area", "interest"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"notification_type": ["sniff_request", "sniff_accepted", "playdate_invite", "event_new", "event_cancelled", "waitlist_promoted", "event_reminder"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
+            "connection_status": ["pending", "accepted", "declined"],"conversation_type": ["direct", "group", "event"],"energy_level": ["low", "medium", "high"],"event_status": ["scheduled", "cancelled"],"event_type": ["playdate", "event"],"group_kind": ["breed", "area", "interest"],"lost_status": ["lost", "found", "closed"],"message_privacy": ["everyone", "connections"],"message_type": ["text", "image", "location", "invite"],"notification_type": ["sniff_request", "sniff_accepted", "playdate_invite", "event_new", "event_cancelled", "waitlist_promoted", "event_reminder", "lost_nearby", "lost_sighting", "lost_found"],"pet_gender": ["male", "female", "unknown"],"pet_size": ["small", "medium", "large", "giant"],"pet_species": ["dog", "cat", "bird", "rabbit", "other"],"pet_temperament": ["friendly", "shy", "reactive"],"play_style": ["chaser", "wrestler", "gentle"],"report_reason": ["spam", "harassment", "inappropriate", "fake_profile", "animal_welfare", "scam", "unsafe_meetup", "other"],"report_status": ["open", "resolved", "dismissed"],"report_target": ["profile", "pet", "message", "group", "event", "post", "comment"],"rsvp_status": ["invited", "going", "maybe", "not_going", "waitlist"],"verification_method": ["email", "photo", "phone", "id"],"verification_request_status": ["pending", "approved", "rejected", "needs_info"],"verification_status": ["unverified", "pending", "verified", "rejected"]
           }
         }
 } as const

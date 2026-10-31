@@ -8,9 +8,12 @@ import {
   CalendarClock,
   CalendarDays,
   CalendarX,
+  Eye,
   Heart,
+  House,
   MessageCircle,
   PartyPopper,
+  Radar,
   UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +38,9 @@ const ICONS: Record<NotificationType, typeof Bell> = {
   event_cancelled: CalendarX,
   waitlist_promoted: CalendarCheck,
   event_reminder: CalendarClock,
+  lost_nearby: Radar,
+  lost_sighting: Eye,
+  lost_found: House,
 };
 
 // The bell: notifications, plus a shortcut to unread chats.
