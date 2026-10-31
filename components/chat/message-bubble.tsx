@@ -18,6 +18,7 @@ export function MessageBubble({
   message,
   mine,
   seen,
+  sender,
   inviteCard,
   onDelete,
   onReport,
@@ -25,6 +26,8 @@ export function MessageBubble({
   message: Message;
   mine: boolean;
   seen: boolean;
+  // Group chats name who sent each message.
+  sender?: string;
   // The playdate card, for the first message about each playdate.
   inviteCard?: React.ReactNode;
   onDelete: () => void;
@@ -54,6 +57,7 @@ export function MessageBubble({
           deleted && "bg-transparent text-muted-foreground italic ring-1 ring-border",
         )}
       >
+        {sender && !mine && !deleted && <p className="mb-0.5 text-xs font-semibold text-teal">{sender}</p>}
         {deleted ? (
           "Message deleted"
         ) : message.type === "image" && message.attachment_url ? (

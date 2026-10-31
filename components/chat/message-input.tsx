@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 export function MessageInput({
   disabled,
   onPlan,
+  planLabel = "Plan a playdate",
   onSendText,
   onSendImage,
   onSendLocation,
@@ -16,6 +17,7 @@ export function MessageInput({
 }: {
   disabled: boolean;
   onPlan?: () => void;
+  planLabel?: string;
   onSendText: (body: string) => Promise<unknown>;
   onSendImage: (file: File) => Promise<unknown>;
   onSendLocation: (lat: number, lng: number) => Promise<unknown>;
@@ -100,7 +102,8 @@ export function MessageInput({
           type="button"
           variant="ghost"
           size="icon-lg"
-          aria-label="Plan a playdate"
+          aria-label={planLabel}
+          title={planLabel}
           disabled={disabled || busy}
           onClick={onPlan}
         >

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Bell, MessageCircle, Users } from "lucide-react";
 import type { useActivity } from "@/hooks/use-activity";
+import { chatTitle } from "@/lib/api/chat";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +45,7 @@ export function ActivityMenu({ activity }: { activity: ReturnType<typeof useActi
           <DropdownMenuItem key={chat.conversation_id} render={<Link href={`/chat/${chat.conversation_id}`} />}>
             <MessageCircle aria-hidden />
             <span className="min-w-0 flex-1 truncate">
-              <span className="font-medium">{chat.other?.full_name ?? "Chat"}</span>
+              <span className="font-medium">{chatTitle(chat)}</span>
               <span className="text-muted-foreground"> · {chat.unread_count} new</span>
             </span>
           </DropdownMenuItem>

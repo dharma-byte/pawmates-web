@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { BellOff, Camera, MapPin, MessageCircle, UserRound } from "lucide-react";
+import { BellOff, CalendarDays, Camera, MapPin, MessageCircle, UserRound, Users } from "lucide-react";
 import { cn } from "cn";
-import { chatKeys, fetchInbox, type InboxItem } from "@/lib/api/chat";
+import { chatKeys, chatTitle, fetchInbox, type InboxItem } from "@/lib/api/chat";
 import { formatChatTime } from "@/lib/utils/dates";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
@@ -49,13 +49,14 @@ export function Inbox() {
 function preview(item: InboxItem) {
   if (item.last_message_type === "image") return { icon: Camera, text: "Photo" };
   if (item.last_message_type === "location") return { icon: MapPin, text: item.last_message_body ?? "Location" };
+  if (item.last_message_type === "invite") return { icon: CalendarDays, text: item.last_message_body ?? "Invite" };
   return { icon: null, text: item.last_message_body ?? "Say hi 👋" };
 }
 
 function InboxRow({ item }: { item: InboxItem }) {
   const unread = item.unread_count > 0;
   const { icon: Icon, text } = preview(item);
-  const name = item.other?.full_name ?? "Pawmates member";
+  const name = chatTitle(item);
 
   return (
     <Link
@@ -64,7 +65,7 @@ function InboxRow({ item }: { item: InboxItem }) {
     >
       <Avatar size="lg">
         {item.other?.avatar_url && <AvatarImage src={item.other.avatar_url} alt="" />}
-        <AvatarFallback>{name[0] ?? <UserRound className="size-4" />}</AvatarFallback>
+        <AvatarFallback>{item.group ? <Users className="size-4 text-teal" aria-hidden /> : (name[0] ?? <UserRound className="size-4" />)}</AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">

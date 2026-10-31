@@ -8,7 +8,7 @@ import { CheckCircle2, Circle, MessageCircle, PawPrint, ShieldCheck, Star, Users
 import { fetchPendingReviews, playdateKeys } from "@/lib/api/playdates";
 import { ReviewDialog } from "@/components/playdates/review-dialog";
 import { toast } from "sonner";
-import { chatKeys, fetchInbox } from "@/lib/api/chat";
+import { chatKeys, chatTitle, fetchInbox } from "@/lib/api/chat";
 import { connectionKeys, fetchDetailedConnections, respondToSniff, type DetailedConnection } from "@/lib/api/connections";
 import { profileChecklist, type Me } from "@/lib/api/me";
 import { formatChatTime } from "@/lib/utils/dates";
@@ -156,10 +156,10 @@ export function UnreadChats() {
               <Link href={`/chat/${chat.conversation_id}`} className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted">
                 <Avatar>
                   {chat.other?.avatar_url && <AvatarImage src={chat.other.avatar_url} alt="" />}
-                  <AvatarFallback>{chat.other?.full_name?.[0] ?? "?"}</AvatarFallback>
+                  <AvatarFallback>{chat.group ? <Users className="size-4" aria-hidden /> : (chat.other?.full_name?.[0] ?? "?")}</AvatarFallback>
                 </Avatar>
                 <span className="min-w-0 flex-1">
-                  <span className={`block truncate text-sm ${chat.unread_count ? "font-semibold" : "font-medium"}`}>{chat.other?.full_name ?? "Chat"}</span>
+                  <span className={`block truncate text-sm ${chat.unread_count ? "font-semibold" : "font-medium"}`}>{chatTitle(chat)}</span>
                   <span className="block truncate text-xs text-muted-foreground">{chat.last_message_body ?? "Say hi 👋"}</span>
                 </span>
                 <span className="flex flex-col items-end gap-1">

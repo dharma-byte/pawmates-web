@@ -10,7 +10,7 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
-import { ArrowLeft, Ban, Bell, BellOff, EllipsisVertical, Flag, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowLeft, Ban, Bell, BellOff, EllipsisVertical, Flag, ShieldCheck, UserRound, Users } from "lucide-react";
 import { toast } from "sonner";
 import {
   blockUser,
@@ -30,7 +30,10 @@ import {
 import { connectionKeys } from "@/lib/api/connections";
 import { reverseGeocode } from "@/lib/api/geocode";
 import { fetchMe, meKey } from "@/lib/api/me";
+import { eventKeys } from "@/lib/api/groups";
 import { playdateKeys } from "@/lib/api/playdates";
+import { EventChatCard } from "@/components/events/event-chat-card";
+import { HostEventDialog } from "@/components/events/host-event-dialog";
 import { PlanPlaydateDialog } from "@/components/playdates/plan-playdate-dialog";
 import { PlaydateCard } from "@/components/playdates/playdate-card";
 import { formatDayDivider, sameDay } from "@/lib/utils/dates";
@@ -84,6 +87,10 @@ export function ChatRoom() {
   const meId = conversation.data?.meId;
   const other = conversation.data?.other;
   const otherProfile = other?.profile;
+  const group = conversation.data?.group ?? null;
+  const memberNames = new Map(
+    (conversation.data?.members ?? []).map((m) => [m.user_id, m.profile?.full_name ?? "Member"]),
+  );
 
   const messages = useInfiniteQuery({
     queryKey: chatKeys.messages(conversationId),
@@ -112,7 +119,10 @@ export function ChatRoom() {
       addMessage(message);
       if (message.sender_id !== meId && document.visibilityState === "visible") readNow();
       // Accept, decline and cancel post a follow-up: refresh that playdate's card.
-      if (message.type === "invite") queryClient.invalidateQueries({ queryKey: playdateKeys.all });
+      if (message.type === "invite") {
+        queryClient.invalidateQueries({ queryKey: playdateKeys.all });
+        queryClient.invalidateQueries({ queryKey: eventKeys.all });
+      }
     },
     onReadReceipt: (userId, lastReadAt) => {
       queryClient.setQueryData<Conversation>(chatKeys.conversation(conversationId), (data) =>
@@ -192,10 +202,14 @@ export function ChatRoom() {
     );
   }
 
-  const name = otherProfile?.full_name ?? "Pawmates member";
+  const name = group?.name ?? otherProfile?.full_name ?? "Pawmates member";
   const muted = conversation.data?.me.muted ?? false;
-  const status =
-    typingUserId === other?.user_id
+  const typingName = typingUserId && typingUserId !== meId ? memberNames.get(typingUserId)?.split(" ")[0] : null;
+  const status = group
+    ? typingName
+      ? `${typingName} is typing…`
+      : `${group.member_count} member${group.member_count === 1 ? "" : "s"}`
+    : typingUserId === other?.user_id
       ? "typing…"
       : other && otherProfile?.show_online && onlineUserIds.includes(other.user_id)
         ? "online"
@@ -210,18 +224,35 @@ export function ChatRoom() {
         </Link>
         <Avatar size="lg">
           {otherProfile?.avatar_url && <AvatarImage src={otherProfile.avatar_url} alt="" />}
-          <AvatarFallback>{name[0] ?? <UserRound className="size-4" />}</AvatarFallback>
+          <AvatarFallback>{group ? <Users className="size-5 text-teal" aria-hidden /> : (name[0] ?? <UserRound className="size-4" />)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           {conversation.isPending ? (
             <Skeleton className="h-5 w-32" />
+          ) : group ? (
+            <Link href={`/groups/${group.id}`} className="block truncate font-semibold hover:underline">{name}</Link>
           ) : (
             <p className="truncate font-semibold">{name}</p>
           )}
-          <p className={`truncate text-xs ${status === "online" || status === "typing…" ? "text-teal" : "text-muted-foreground"}`}>
+          <p className={`truncate text-xs ${status === "online" || status.endsWith("typing…") ? "text-teal" : "text-muted-foreground"}`}>
             {status}
           </p>
         </div>
+        {group && (
+          <DropdownMenu>
+            <DropdownMenuTrigger aria-label="Chat options" className="rounded-full p-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50">
+              <EllipsisVertical className="size-5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem render={<Link href={`/groups/${group.id}`} />}>
+                <Users aria-hidden /> Group info & events
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => mute.mutate(!muted)}>
+                {muted ? <Bell aria-hidden /> : <BellOff aria-hidden />} {muted ? "Unmute" : "Mute"} chat
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         {other && (
           <DropdownMenu>
             <DropdownMenuTrigger aria-label="Chat options" className="rounded-full p-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50">
@@ -294,8 +325,11 @@ export function ChatRoom() {
                 message={message}
                 mine={message.sender_id === meId}
                 seen={!!other && other.last_read_at >= message.created_at}
+                sender={group ? memberNames.get(message.sender_id) ?? "Former member" : undefined}
                 inviteCard={
-                  cardMessageIds.has(message.id) ? (
+                  cardMessageIds.has(message.id) && group ? (
+                    <EventChatCard eventId={(message.metadata as { event_id: string }).event_id} canManage={false} />
+                  ) : cardMessageIds.has(message.id) ? (
                     <PlaydateCard
                       eventId={(message.metadata as { event_id: string }).event_id}
                       otherName={name.split(" ")[0]}
@@ -317,8 +351,9 @@ export function ChatRoom() {
       </div>
 
       <MessageInput
-        disabled={!other}
-        onPlan={me?.pets.length ? () => setPlanning(true) : undefined}
+        disabled={!other && !group}
+        onPlan={group || me?.pets.length ? () => setPlanning(true) : undefined}
+        planLabel={group ? "Host an event" : "Plan a playdate"}
         onTyping={notifyTyping}
         onSendText={(body) => send(() => sendText(conversationId, body))}
         onSendImage={(file) => send(() => sendImage(conversationId, file))}
@@ -331,7 +366,10 @@ export function ChatRoom() {
       <ReportDialog target={reporting} onClose={() => setReporting(null)} />
 
       {/* Mounted only while open: the planner reads the clock and runs place searches. */}
-      {planning && me && (
+      {planning && me && group && (
+        <HostEventDialog groupId={group.id} groupName={group.name} myPets={me.pets} onClose={() => setPlanning(false)} />
+      )}
+      {planning && me && !group && (
         <PlanPlaydateDialog
           conversationId={conversationId}
           otherName={name.split(" ")[0]}

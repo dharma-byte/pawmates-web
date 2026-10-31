@@ -23,17 +23,25 @@ export async function fetchInbox() {
   if (error) throw error;
 
   const otherIds = data.map((c) => c.other_user_id).filter((id): id is string => !!id);
+  const groupIds = data.map((c) => c.group_id).filter((id): id is string => !!id);
   const people = new Map<string, { full_name: string | null; username: string | null; avatar_url: string | null }>();
-  if (otherIds.length > 0) {
-    const { data: profiles, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, full_name, username, avatar_url")
-      .in("id", otherIds);
-    if (profileError) throw profileError;
-    profiles.forEach((p) => people.set(p.id, p));
-  }
+  const groups = new Map<string, { name: string; kind: Database["public"]["Enums"]["group_kind"] }>();
+  const [profiles, groupRows] = await Promise.all([
+    otherIds.length > 0
+      ? supabase.from("profiles").select("id, full_name, username, avatar_url").in("id", otherIds)
+      : null,
+    groupIds.length > 0 ? supabase.from("groups").select("id, name, kind").in("id", groupIds) : null,
+  ]);
+  if (profiles?.error) throw profiles.error;
+  if (groupRows?.error) throw groupRows.error;
+  profiles?.data.forEach((p) => people.set(p.id, p));
+  groupRows?.data.forEach((g) => groups.set(g.id, g));
 
-  return data.map((c) => ({ ...c, other: c.other_user_id ? people.get(c.other_user_id) ?? null : null }));
+  return data.map((c) => ({
+    ...c,
+    other: c.other_user_id ? people.get(c.other_user_id) ?? null : null,
+    group: c.group_id ? groups.get(c.group_id) ?? null : null,
+  }));
 }
 
 export type InboxItem = Awaited<ReturnType<typeof fetchInbox>>[number];
@@ -43,16 +51,27 @@ export async function fetchConversation(conversationId: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const { data, error } = await supabase
-    .from("conversation_members")
-    .select(`user_id, last_read_at, muted, profile:profiles (${PERSON})`)
-    .eq("conversation_id", conversationId);
-  if (error) throw error;
+  const [members, conversation] = await Promise.all([
+    supabase
+      .from("conversation_members")
+      .select(`user_id, last_read_at, muted, profile:profiles (${PERSON})`)
+      .eq("conversation_id", conversationId),
+    supabase
+      .from("conversations")
+      .select("type, group:groups (id, name, kind, member_count)")
+      .eq("id", conversationId)
+      .maybeSingle(),
+  ]);
+  if (members.error) throw members.error;
+  if (conversation.error) throw conversation.error;
 
+  const data = members.data;
   const me = data.find((m) => m.user_id === user?.id);
-  if (!me) throw new Error("This conversation doesn't exist or you're not part of it.");
-  const other = data.find((m) => m.user_id !== user?.id) ?? null;
-  return { meId: me.user_id, me, other };
+  if (!me || !conversation.data) throw new Error("This conversation doesn't exist or you're not part of it.");
+  const isGroup = conversation.data.type === "group";
+  // Direct chats have one other person; groups show who said what instead.
+  const other = isGroup ? null : (data.find((m) => m.user_id !== user?.id) ?? null);
+  return { meId: me.user_id, me, other, group: isGroup ? conversation.data.group : null, members: data };
 }
 
 export type Conversation = Awaited<ReturnType<typeof fetchConversation>>;
@@ -176,4 +195,9 @@ export function locationOf(message: Message) {
   return typeof meta?.lat === "number" && typeof meta?.lng === "number"
     ? { lat: meta.lat, lng: meta.lng }
     : null;
+}
+
+// What to call a chat in lists: the group's name or the other person's.
+export function chatTitle(item: Pick<InboxItem, "group" | "other">) {
+  return item.group?.name ?? item.other?.full_name ?? "Pawmates member";
 }
