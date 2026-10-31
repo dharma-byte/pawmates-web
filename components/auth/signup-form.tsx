@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
+import { authErrorMessage } from "@/lib/auth/errors";
 import { emailRedirectUrl } from "@/lib/auth/redirect";
 import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
@@ -38,14 +39,7 @@ export function SignupForm() {
     });
 
     if (error) {
-      setError("root", {
-        message:
-          error.code === "weak_password"
-            ? "Choose a stronger password: at least 8 characters with letters and numbers."
-            : error.code === "over_email_send_rate_limit"
-              ? "Too many emails sent. Please wait a few minutes and try again."
-              : error.message,
-      });
+      setError("root", { message: authErrorMessage(error) });
       return;
     }
 

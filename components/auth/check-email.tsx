@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { authErrorMessage } from "@/lib/auth/errors";
 import { openAuthChannel, type AuthTabMessage } from "@/lib/auth/tab-sync";
 import { Button } from "@/components/ui/button";
 
@@ -86,7 +87,7 @@ export function CheckEmail({
     setSending(true);
     const { error } = await onResend();
     setSending(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(authErrorMessage(error));
     else toast.success("Sent again. Check your inbox.");
   }
 

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { authErrorMessage } from "@/lib/auth/errors";
 import { emailRedirectUrl, safeNext } from "@/lib/auth/redirect";
 import {
   loginSchema,
@@ -103,12 +104,7 @@ function PasswordLogin({
       return;
     }
     if (error) {
-      setError("root", {
-        message:
-          error.code === "invalid_credentials"
-            ? "Wrong email or password."
-            : error.message,
-      });
+      setError("root", { message: authErrorMessage(error) });
       return;
     }
 
@@ -124,13 +120,13 @@ function PasswordLogin({
       email: unconfirmedEmail,
       options: { emailRedirectTo: emailRedirectUrl("/onboarding") },
     });
-    if (error) toast.error(error.message);
+    if (error) toast.error(authErrorMessage(error));
     else toast.success("Confirmation email sent. Check your inbox.");
   }
 
   async function signInWithLinkInstead(email: string) {
     const { error } = await sendMagicLink(email);
-    if (error) toast.error(error.message);
+    if (error) toast.error(authErrorMessage(error));
     else onMagicLinkSent(email);
   }
 
@@ -206,7 +202,7 @@ function MagicLinkLogin({
     const { error } = await sendMagicLink(email);
     // Do not reveal whether an account exists: "no such user" counts as sent.
     if (error && error.code !== "otp_disabled" && !/signups not allowed/i.test(error.message)) {
-      setError("root", { message: error.message });
+      setError("root", { message: authErrorMessage(error) });
       return;
     }
     onSent(email);
