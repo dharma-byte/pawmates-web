@@ -18,7 +18,7 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={cn("scroll-mt-20 py-16 sm:py-24", tinted && "bg-muted/50")}>
+    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={cn("scroll-mt-20 py-16 sm:py-24", tinted && "bg-background/30")}>
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4">
         <div className="mx-auto grid max-w-2xl gap-3 text-center">
           {eyebrow && <p className="text-sm font-semibold tracking-wide text-teal uppercase">{eyebrow}</p>}

@@ -2,10 +2,10 @@ import { PawPrint } from "lucide-react";
 import { cn } from "cn";
 
 const TONES = {
-  peach: "bg-[#ffd8c9]",
-  mint: "bg-[#cfeee9]",
-  sky: "bg-[#dbe6f5]",
-  sun: "bg-[#ffe7b8]",
+  peach: "bg-coral/25",
+  mint: "bg-teal/25",
+  sky: "bg-sky-400/20",
+  sun: "bg-orange/25",
 } as const;
 
 // Illustrative pet card for marketing pages. Swap the tinted panel for a real
@@ -23,7 +23,7 @@ export function PetTile({
 }) {
   return (
     <div className={cn("relative flex flex-col justify-end overflow-hidden rounded-3xl p-3", TONES[tone], className)}>
-      <PawPrint className="absolute top-1/2 left-1/2 size-16 -translate-x-1/2 -translate-y-1/2 text-black/10" aria-hidden />
+      <PawPrint className="absolute top-1/2 left-1/2 size-16 -translate-x-1/2 -translate-y-1/2 text-white/15" aria-hidden />
       <span className="relative self-start rounded-full bg-background px-3 py-1 text-sm font-semibold shadow-sm">
         {name} <span className="font-normal text-muted-foreground">· {detail}</span>
       </span>

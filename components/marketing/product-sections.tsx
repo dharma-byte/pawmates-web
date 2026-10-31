@@ -49,7 +49,7 @@ export function Features() {
         <FeatureCard icon={Sparkles} title="Discover with a match score" text="See verified pets within 1 to 25 km, filtered by species, size, energy and temperament.">
           <div className="flex items-center justify-between rounded-2xl bg-background p-3 shadow-sm">
             <span className="flex items-center gap-3">
-              <span className="size-10 rounded-xl bg-[#ffe7b8]" />
+              <span className="size-10 rounded-xl bg-orange/30" />
               <span><span className="block font-semibold">Luna</span><span className="block text-xs text-muted-foreground">Indie · 1.5 km</span></span>
             </span>
             <span className="rounded-full bg-secondary px-2.5 py-1 text-sm font-bold text-primary">96%</span>
@@ -72,7 +72,7 @@ export function Features() {
         </FeatureCard>
 
         <FeatureCard icon={Map} title="Meetup spots map" text="Dog parks, pet-friendly cafés and trails, reviewed by members: fenced, water, shade." soon>
-          <div className="relative h-24 overflow-hidden rounded-2xl bg-[#e1ece7]" aria-hidden>
+          <div className="relative h-24 overflow-hidden rounded-2xl bg-teal/20" aria-hidden>
             <span className="absolute top-1/2 -left-4 h-2.5 w-[120%] -rotate-6 bg-background" />
             <span className="absolute top-0 left-1/3 h-full w-2 bg-background" />
             <span className="absolute top-3 left-[12%] rounded-full bg-background px-2 py-0.5 text-xs font-semibold shadow-sm">Bruno</span>
