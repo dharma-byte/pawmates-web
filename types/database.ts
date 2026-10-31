@@ -419,6 +419,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"push_subscriptions": {
+                  Row: {
+                    "auth": string,"created_at": string,"endpoint": string,"id": string,"p256dh": string,"user_agent": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "auth": string,"created_at"?: string,"endpoint": string,"id"?: string,"p256dh": string,"user_agent"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "auth"?: string,"created_at"?: string,"endpoint"?: string,"id"?: string,"p256dh"?: string,"user_agent"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "push_subscriptions_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"reports": {
                   Row: {
                     "admin_notes": string | null,"created_at": string,"details": string | null,"id": string,"reason": Database["public"]['Enums']["report_reason"],"reporter_id": string,"resolved_at": string | null,"resolved_by": string | null,"status": Database["public"]['Enums']["report_status"],"target_id": string,"target_type": Database["public"]['Enums']["report_target"]
@@ -521,6 +541,9 @@ isOneToOne: false
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"delete_push_subscription":
+{ Args: { "endpoint": string }; Returns: undefined
+                           },
 "event_location":
 { Args: { "event": string }; Returns: {
               "lat": number,"lng": number
@@ -597,6 +620,9 @@ isOneToOne: false
 "remove_group_member":
 { Args: { "g": string,"member": string }; Returns: undefined
                            },
+"remove_push_subscriptions":
+{ Args: { "endpoints": (string)[],"secret": string }; Returns: number
+                           },
 "report_lost_pet":
 { Args: { "alert_radius_km"?: number,"description"?: string,"last_seen_at": string,"last_seen_place": string,"lat": number,"lng": number,"pet": string }; Returns: string
                            },
@@ -632,6 +658,9 @@ isOneToOne: false
                            },
 "rsvp_event":
 { Args: { "answer": Database["public"]['Enums']["rsvp_status"],"event": string,"my_pet_ids"?: (string)[] }; Returns: Database["public"]['Enums']["rsvp_status"]
+                           },
+"save_push_subscription":
+{ Args: { "auth_key": string,"endpoint": string,"p256dh": string,"user_agent"?: string }; Returns: undefined
                            },
 "set_group_admin":
 { Args: { "g": string,"make_admin": boolean,"member": string }; Returns: undefined

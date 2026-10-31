@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
 // Routes anyone can open without signing in.
-const PUBLIC_ROUTES = ["/", "/login", "/signup", "/auth", "/privacy", "/terms"];
+// /api/push is called by the database and checks its own shared secret.
+const PUBLIC_ROUTES = ["/", "/login", "/signup", "/auth", "/privacy", "/terms", "/api/push"];
 
 // Routes a signed-in user can open before being verified.
 const UNVERIFIED_ROUTES = ["/onboarding", "/settings", "/auth"];
