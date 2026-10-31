@@ -90,9 +90,13 @@ function SidebarNav({ badges, pathname }: { badges: Record<string, number>; path
 }
 
 function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname: string | null }) {
-  const [home, discover, requests, chat] = APP_NAV;
+  // No room for five tabs plus ＋: Friends stands in for Requests on phones,
+  // carrying its badge, and links to Requests from the page.
+  const [home, discover, friends, , chat] = APP_NAV;
   const tab = (item: (typeof APP_NAV)[number]) => {
-    const active = isActivePath(pathname, item.href);
+    const active =
+      isActivePath(pathname, item.href) || (item.href === "/friends" && isActivePath(pathname, "/requests"));
+    const badge = item.href === "/friends" ? badges["/requests"] : badges[item.href];
     const Icon = item.icon;
     return (
       <Link
@@ -102,7 +106,7 @@ function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname
       >
         <span className="relative">
           <Icon className={cn("size-5", active && "text-coral")} aria-hidden />
-          <CountBadge count={badges[item.href] ?? 0} floating />
+          <CountBadge count={badge ?? 0} floating />
         </span>
         {item.label}
       </Link>
@@ -120,7 +124,7 @@ function TabBar({ badges, pathname }: { badges: Record<string, number>; pathname
         <li className="flex justify-center">
           <CreateMenu variant="tab" />
         </li>
-        <li>{tab(requests)}</li>
+        <li>{tab(friends)}</li>
         <li>{tab(chat)}</li>
       </ul>
     </nav>
