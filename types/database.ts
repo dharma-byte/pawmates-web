@@ -268,6 +268,9 @@ isOneToOne: false
 "ban_user":
 { Args: { "reason": string,"target": string }; Returns: undefined
                            },
+"compatibility_breakdown":
+{ Args: { "pet_a": string,"pet_b": string }; Returns: Json
+                           },
 "compatibility_score":
 { Args: { "pet_a": string,"pet_b": string }; Returns: number
                            },
@@ -300,7 +303,7 @@ isOneToOne: false
                            },
 "nearby_pets":
 { Args: { "energies"?: (Database["public"]['Enums']["energy_level"])[],"lat"?: number,"lng"?: number,"max_age_months"?: number,"min_age_months"?: number,"my_pet_id"?: string,"page_offset"?: number,"page_size"?: number,"radius_km"?: number,"sizes"?: (Database["public"]['Enums']["pet_size"])[],"species_filter"?: (Database["public"]['Enums']["pet_species"])[],"temperaments"?: (Database["public"]['Enums']["pet_temperament"])[],"vaccinated_only"?: boolean }; Returns: {
-              "age_months": number,"approx_distance_km": number,"area_name": string,"breed": string,"compatibility": number,"energy": Database["public"]['Enums']["energy_level"],"gender": Database["public"]['Enums']["pet_gender"],"likes": (string)[],"name": string,"owner_avatar_url": string,"owner_id": string,"owner_username": string,"pet_id": string,"photo": string,"play_style": Database["public"]['Enums']["play_style"],"size": Database["public"]['Enums']["pet_size"],"species": Database["public"]['Enums']["pet_species"],"temperament": Database["public"]['Enums']["pet_temperament"],"vaccinated": boolean
+              "age_months": number,"approx_distance_km": number,"approx_lat": number,"approx_lng": number,"area_name": string,"breed": string,"compatibility": number,"energy": Database["public"]['Enums']["energy_level"],"gender": Database["public"]['Enums']["pet_gender"],"likes": (string)[],"name": string,"owner_avatar_url": string,"owner_id": string,"owner_username": string,"pet_id": string,"photo": string,"play_style": Database["public"]['Enums']["play_style"],"size": Database["public"]['Enums']["pet_size"],"species": Database["public"]['Enums']["pet_species"],"temperament": Database["public"]['Enums']["pet_temperament"],"vaccinated": boolean
             }[]
                            },
 "resolve_report":
